@@ -1,0 +1,100 @@
+<div class="page-header">
+  <div class="container">
+    <a routerLink="/owner" class="back-link">← Dashboard</a>
+    <h1>{{ isEdit ? '✏️ Edit Restaurant' : '🏪 Register Restaurant' }}</h1>
+    <p *ngIf="!isEdit">Fill in details — admin will review and approve</p>
+  </div>
+</div>
+
+<div class="container manage-body">
+  <app-spinner *ngIf="loading" message="Loading..."></app-spinner>
+
+  <div class="manage-card card" *ngIf="!loading">
+    <div class="form-grid">
+
+      <!-- Name -->
+      <div class="form-group full">
+        <label class="form-label">Restaurant Name *</label>
+        <input type="text" class="form-control" [(ngModel)]="form.name" placeholder="e.g. Spice Garden">
+      </div>
+
+      <!-- Cuisine -->
+      <div class="form-group">
+        <label class="form-label">Cuisine Type *</label>
+        <select class="form-control" [(ngModel)]="form.cuisine">
+          <option value="">Select cuisine</option>
+          <option *ngFor="let c of cuisines" [value]="c">{{ c }}</option>
+        </select>
+      </div>
+
+      <!-- City -->
+      <div class="form-group">
+        <label class="form-label">City *</label>
+        <select class="form-control" [(ngModel)]="form.city">
+          <option value="">Select city</option>
+          <option *ngFor="let c of cities" [value]="c">{{ c }}</option>
+        </select>
+      </div>
+
+      <!-- Address -->
+      <div class="form-group full">
+        <label class="form-label">Full Address *</label>
+        <input type="text" class="form-control" [(ngModel)]="form.address"
+               placeholder="Street, Area, Landmark">
+      </div>
+
+      <!-- Description -->
+      <div class="form-group full">
+        <label class="form-label">Description <span class="opt">(optional)</span></label>
+        <textarea class="form-control" [(ngModel)]="form.description"
+                  rows="3" placeholder="Tell customers what makes your restaurant special..."></textarea>
+      </div>
+
+      <!-- Phone -->
+      <div class="form-group">
+        <label class="form-label">Phone <span class="opt">(optional)</span></label>
+        <input type="tel" class="form-control" [(ngModel)]="form.phone" placeholder="+91 98765 43210">
+      </div>
+
+      <!-- Image URL -->
+      <div class="form-group">
+        <label class="form-label">Image URL <span class="opt">(optional)</span></label>
+        <input type="url" class="form-control" [(ngModel)]="form.imageUrl"
+               placeholder="https://example.com/image.jpg">
+      </div>
+
+      <!-- Delivery Radius -->
+      <div class="form-group">
+        <label class="form-label">Delivery Radius (km)</label>
+        <input type="number" class="form-control" [(ngModel)]="form.deliveryRadius" min="1" max="50">
+      </div>
+
+      <!-- Min Order -->
+      <div class="form-group">
+        <label class="form-label">Min Order Amount (₹)</label>
+        <input type="number" class="form-control" [(ngModel)]="form.minOrderAmount" min="0">
+      </div>
+
+      <!-- Delivery Time -->
+      <div class="form-group">
+        <label class="form-label">Est. Delivery Time (min)</label>
+        <input type="number" class="form-control" [(ngModel)]="form.estimatedDeliveryMin" min="10" max="120">
+      </div>
+
+      <!-- Image preview -->
+      <div class="form-group full" *ngIf="form.imageUrl">
+        <label class="form-label">Image Preview</label>
+        <img [src]="form.imageUrl" alt="Preview" class="img-preview"
+             (error)="form.imageUrl = ''">
+      </div>
+    </div>
+
+    <div class="manage-actions">
+      <a routerLink="/owner" class="btn btn-ghost">Cancel</a>
+      <button class="btn btn-primary" (click)="save()" [disabled]="saving">
+        <span *ngIf="saving" class="btn-spinner"></span>
+        {{ saving ? 'Saving...' : (isEdit ? '✓ Save Changes' : '🚀 Register Restaurant') }}
+      </button>
+    </div>
+  </div>
+</div>

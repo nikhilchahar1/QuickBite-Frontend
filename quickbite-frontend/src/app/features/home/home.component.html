@@ -1,0 +1,179 @@
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-bg-shape"></div>
+  <div class="container">
+    <div class="hero-inner">
+
+      <!-- Left text -->
+      <div class="hero-text fade-in">
+        <span class="hero-tag">🔥 Trusted by 50,000+ foodies</span>
+        <h1 class="hero-title">
+          Hungry? <br>
+          <span class="hero-accent">We deliver</span><br>
+          in 30 mins.
+        </h1>
+        <p class="hero-sub">
+          Order from the best restaurants in your city. Fresh food, fast delivery, zero fuss.
+        </p>
+
+        <!-- Search bar -->
+        <div class="hero-search">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" class="search-ic">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Search restaurants or dishes..."
+            [(ngModel)]="searchQuery"
+            (keyup.enter)="onSearch()"
+          >
+          <button class="search-btn" (click)="onSearch()">Search</button>
+        </div>
+
+        <!-- Quick cuisine chips -->
+        <div class="hero-chips">
+          <button *ngFor="let c of cuisines.slice(0,5)"
+                  class="chip"
+                  (click)="onCuisine(c.name)">
+            {{ c.emoji }} {{ c.name }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Right visual -->
+      <div class="hero-visual fade-in" style="animation-delay:0.15s">
+        <div class="hv-card hv-card-1">
+          <span class="hv-emoji">🍕</span>
+          <div><strong>Margherita</strong><span>⭐ 4.8 · 25 min</span></div>
+        </div>
+        <div class="hv-card hv-card-2">
+          <span class="hv-emoji">🍛</span>
+          <div><strong>Butter Chicken</strong><span>⭐ 4.9 · 30 min</span></div>
+        </div>
+        <div class="hv-card hv-card-3">
+          <span class="hv-emoji">🌮</span>
+          <div><strong>Tacos al Pastor</strong><span>⭐ 4.7 · 20 min</span></div>
+        </div>
+        <div class="hv-ring"></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── STATS BAR ── -->
+<section class="stats-bar">
+  <div class="container">
+    <div class="stats-row">
+      <div class="stat" *ngFor="let s of stats; let i = index">
+        <span class="stat-icon">{{ s.icon }}</span>
+        <strong>{{ s.value }}</strong>
+        <span>{{ s.label }}</span>
+        <div class="stat-divider" *ngIf="i < stats.length - 1"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CUISINE PICKS ── -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">What are you craving?</h2>
+    <p class="section-subtitle">Pick a cuisine and find top-rated restaurants instantly</p>
+    <div class="cuisine-grid">
+      <button *ngFor="let c of cuisines"
+              class="cuisine-card"
+              (click)="onCuisine(c.name)">
+        <span class="cc-emoji">{{ c.emoji }}</span>
+        <span class="cc-name">{{ c.name }}</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURED RESTAURANTS ── -->
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">Top Restaurants</h2>
+        <p class="section-subtitle">Handpicked and highly rated</p>
+      </div>
+      <a routerLink="/restaurants" class="btn btn-outline btn-sm">View All →</a>
+    </div>
+
+    <app-spinner *ngIf="loading" message="Finding restaurants..."></app-spinner>
+
+    <div class="r-grid" *ngIf="!loading && featuredRestaurants.length > 0">
+      <a *ngFor="let r of featuredRestaurants"
+         [routerLink]="['/restaurants', r.restaurantId]"
+         class="r-card card card-hover">
+
+        <!-- Image -->
+        <div class="r-img">
+          <img *ngIf="r.imageUrl" [src]="r.imageUrl" [alt]="r.name" loading="lazy">
+          <div *ngIf="!r.imageUrl" class="r-img-placeholder">🏪</div>
+          <span class="r-tag">{{ r.cuisine }}</span>
+          <span class="r-status" [class.open]="r.open" [class.closed]="!r.open">
+            {{ r.open ? '● Open' : '● Closed' }}
+          </span>
+        </div>
+
+        <!-- Info -->
+        <div class="r-info">
+          <h3 class="r-name">{{ r.name }}</h3>
+          <p class="r-city">📍 {{ r.city }}</p>
+          <div class="r-meta">
+            <span class="r-rating">★ {{ r.avgRating?.toFixed(1) || '4.0' }}</span>
+            <span class="r-sep">·</span>
+            <span>{{ r.estimatedDeliveryMin || 30 }} min</span>
+            <span class="r-sep">·</span>
+            <span>₹{{ r.minOrderAmount || 0 }} min</span>
+          </div>
+          <p *ngIf="r.description" class="r-desc">{{ r.description }}</p>
+        </div>
+      </a>
+    </div>
+
+    <div class="empty-state" *ngIf="!loading && featuredRestaurants.length === 0">
+      <div class="empty-icon">🏪</div>
+      <h3>No restaurants yet</h3>
+      <p>Check back soon — new restaurants are joining every day!</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ── -->
+<section class="how-section">
+  <div class="container">
+    <h2 class="section-title text-center">How QuickBite Works</h2>
+    <p class="section-subtitle text-center" style="margin-bottom:48px">
+      Order your favourite food in 3 simple steps
+    </p>
+    <div class="steps">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <div class="step-icon">🔍</div>
+        <h3>Browse</h3>
+        <p>Search hundreds of restaurants by cuisine, rating, or location.</p>
+      </div>
+      <div class="step-arrow">⟶</div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <div class="step-icon">🛒</div>
+        <h3>Order</h3>
+        <p>Add items, apply promo codes, pick COD / Wallet / Razorpay.</p>
+      </div>
+      <div class="step-arrow">⟶</div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <div class="step-icon">🚴</div>
+        <h3>Enjoy</h3>
+        <p>Track live and enjoy hot, fresh food at your door.</p>
+      </div>
+    </div>
+  </div>
+</section>

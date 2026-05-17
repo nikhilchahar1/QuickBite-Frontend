@@ -1,0 +1,152 @@
+<div class="page-header">
+  <div class="container">
+    <a routerLink="/orders" class="back-link">← My Orders</a>
+    <h1>Order #{{ order?.orderId }}</h1>
+    <p *ngIf="order">Placed on {{ formatDate(order.orderDate) }}</p>
+  </div>
+</div>
+
+<div class="container tracking-body">
+
+  <app-spinner *ngIf="loading" message="Loading order..."></app-spinner>
+
+  <div *ngIf="!loading && order">
+
+    <!-- CANCELLED banner -->
+    <div class="alert alert-error" *ngIf="isCancelled">
+      <span>✕</span>
+      <div>
+        <strong>Order Cancelled</strong>
+        <p style="margin:0;font-size:0.85rem">
+          Cancelled on {{ order.cancelledAt ? formatDate(order.cancelledAt) : 'N/A' }}
+        </p>
+      </div>
+    </div>
+
+    <!-- DELIVERED banner -->
+    <div class="alert alert-success" *ngIf="isDelivered">
+      <span>🎉</span>
+      <div>
+        <strong>Order Delivered!</strong>
+        <p style="margin:0;font-size:0.85rem">
+          Delivered on {{ order.deliveredAt ? formatDate(order.deliveredAt) : 'N/A' }}
+        </p>
+      </div>
+    </div>
+
+    <div class="tracking-layout">
+
+      <!-- ── LEFT: Stepper + Actions ── -->
+      <div class="tracking-main">
+
+        <!-- Status Stepper -->
+        <div class="tracker-card card" *ngIf="!isCancelled">
+          <div class="tracker-header">
+            <h3>Live Tracking</h3>
+            <span class="badge badge-info" style="font-size:0.7rem">Auto-refreshes every 15s</span>
+          </div>
+
+          <div class="stepper">
+            <div *ngFor="let step of steps; let i = index"
+                 class="step-item"
+                 [class.completed]="isCompleted(step.status)"
+                 [class.active]="isActive(step.status)">
+
+              <div class="step-left">
+                <div class="step-circle">
+                  <span *ngIf="isCompleted(step.status) && !isActive(step.status)">✓</span>
+                  <span *ngIf="isActive(step.status)">{{ step.icon }}</span>
+                  <span *ngIf="!isCompleted(step.status) && !isActive(step.status)">{{ i + 1 }}</span>
+                </div>
+                <div class="step-line" *ngIf="i < steps.length - 1"></div>
+              </div>
+
+              <div class="step-content">
+                <strong>{{ step.label }}</strong>
+                <p>{{ step.desc }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-row">
+          <button
+            *ngIf="canCancel"
+            class="btn btn-danger"
+            (click)="cancelOrder()"
+            [disabled]="cancelling">
+            {{ cancelling ? 'Cancelling...' : '✕ Cancel Order' }}
+          </button>
+
+          
+            <a *ngIf="isDelivered"
+            [routerLink]="['/review', order.orderId]"
+            class="btn btn-outline">
+            ⭐ Write a Review
+          </a>
+
+          <a routerLink="/restaurants" class="btn btn-ghost">Order Again</a>
+        </div>
+      </div>
+
+      <!-- ── RIGHT: Order Details ── -->
+      <div class="order-details">
+
+        <!-- Order Info Card -->
+        <div class="card detail-card">
+          <h4>Order Details</h4>
+          <hr class="divider">
+
+          <div class="detail-row">
+            <span>Status</span>
+            <span class="badge" [class]="'status-' + order.orderStatus">
+              {{ order.orderStatus }}
+            </span>
+          </div>
+          <div class="detail-row">
+            <span>Payment</span>
+            <span><strong>{{ order.paymentMode }}</strong></span>
+          </div>
+          <div class="detail-row">
+            <span>Delivery to</span>
+            <span class="detail-address">{{ order.deliveryAddress }}</span>
+          </div>
+          <div class="detail-row" *ngIf="order.specialInstructions">
+            <span>Instructions</span>
+            <span>{{ order.specialInstructions }}</span>
+          </div>
+          <div class="detail-row" *ngIf="order.estimatedDeliveryMin">
+            <span>Est. Delivery</span>
+            <span>{{ order.estimatedDeliveryMin }} min</span>
+          </div>
+        </div>
+
+        <!-- Items Card -->
+        <div class="card detail-card">
+          <h4>Items Ordered</h4>
+          <hr class="divider">
+
+          <div class="oi-row" *ngFor="let item of order.orderItems">
+            <div class="oi-left">
+              <span class="oi-qty">{{ item.quantity }}×</span>
+              <span>{{ item.itemName }}</span>
+            </div>
+            <span class="oi-price">₹{{ item.subtotal }}</span>
+          </div>
+
+          <hr class="divider">
+
+          <div class="detail-row" *ngIf="order.discount">
+            <span>Discount</span>
+            <span class="text-success">− ₹{{ order.discount }}</span>
+          </div>
+          <div class="detail-row total-row">
+            <strong>Total Paid</strong>
+            <strong>₹{{ order.finalAmount }}</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

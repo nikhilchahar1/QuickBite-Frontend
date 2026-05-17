@@ -1,0 +1,60 @@
+.review-body { padding: 32px 0 64px; max-width: 620px; }
+
+.back-link {
+  display: inline-block; color: rgba(255,255,255,0.75);
+  font-size: 0.85rem; text-decoration: none; margin-bottom: 10px;
+  &:hover { color: white; }
+}
+
+.already-card {
+  padding: 48px; text-align: center;
+  .already-icon { font-size: 3rem; margin-bottom: 16px; }
+  h3 { font-size: 1.4rem; margin-bottom: 8px; }
+  p  { color: var(--text-muted); }
+}
+
+.review-card { padding: 0; overflow: hidden; }
+
+.rating-section { padding: 28px 32px; }
+.rating-section h3 { font-size: 1rem; font-weight: 800; margin-bottom: 4px; }
+.rating-sub { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 16px; }
+.optional   { font-size: 0.75rem; color: var(--text-muted); font-weight: 400; }
+
+/* Stars */
+.stars-row { display: flex; gap: 6px; margin-bottom: 10px; }
+
+.star-btn {
+  background: none; border: none; cursor: pointer;
+  font-size: 2.2rem; line-height: 1;
+  color: var(--border-dark);
+  transition: all 0.1s ease;
+  padding: 0;
+  &.filled { color: var(--accent); transform: scale(1.1); }
+  &:hover  { transform: scale(1.15); }
+}
+
+.delivery-star.filled { color: var(--info); }
+
+.rating-label {
+  font-size: 0.9rem; font-weight: 700;
+  color: var(--text-soft); min-height: 24px;
+  animation: fadeIn 0.15s ease;
+}
+
+.char-count {
+  text-align: right; font-size: 0.75rem;
+  color: var(--text-muted); margin-top: 6px;
+}
+
+.review-submit {
+  padding: 20px 32px;
+  display: flex; justify-content: flex-end; gap: 12px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-soft);
+}
+
+.btn-spinner {
+  width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,0.4); border-top-color: white;
+  border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block;
+}

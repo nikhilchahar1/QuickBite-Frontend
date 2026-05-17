@@ -1,0 +1,148 @@
+<div class="page-header">
+  <div class="container">
+    <a routerLink="/owner" class="back-link">← Dashboard</a>
+    <h1>🍽️ Menu Management</h1>
+    <p>Add and manage categories and menu items</p>
+  </div>
+</div>
+
+<div class="container menu-body">
+
+  <app-spinner *ngIf="loading" message="Loading menu..."></app-spinner>
+
+  <div *ngIf="!loading">
+
+    <!-- Add Category button -->
+    <div class="top-bar">
+      <h2>Categories ({{ categories.length }})</h2>
+      <button class="btn btn-primary btn-sm" (click)="showCatForm = !showCatForm">
+        {{ showCatForm ? '✕ Cancel' : '+ Add Category' }}
+      </button>
+    </div>
+
+    <!-- Category Form -->
+    <div class="inline-form card" *ngIf="showCatForm">
+      <div class="form-group" style="margin:0;flex:1">
+        <input type="text" class="form-control" [(ngModel)]="catName"
+               placeholder="Category name (e.g. Starters, Main Course)" (keyup.enter)="addCategory()">
+      </div>
+      <button class="btn btn-primary btn-sm" (click)="addCategory()" [disabled]="savingCat || !catName">
+        {{ savingCat ? '...' : 'Add' }}
+      </button>
+    </div>
+
+    <!-- Empty -->
+    <div class="empty-state" *ngIf="categories.length === 0">
+      <div class="empty-icon">🍽️</div>
+      <h3>No categories yet</h3>
+      <p>Add a category like "Starters" or "Main Course" to begin</p>
+    </div>
+
+    <!-- Category Sections -->
+    <div *ngFor="let cat of categories" class="cat-section card">
+      <div class="cat-header">
+        <div>
+          <h3>{{ cat.name }}</h3>
+          <span class="item-cnt">{{ getItemsForCategory(cat.categoryId).length }} items</span>
+        </div>
+        <div class="cat-actions">
+          <button class="btn btn-outline btn-sm" (click)="openAddItem(cat.categoryId)">+ Add Item</button>
+          <button class="btn btn-danger btn-sm" (click)="deleteCategory(cat.categoryId)">Delete</button>
+        </div>
+      </div>
+
+      <!-- Items -->
+      <div class="items-table" *ngIf="getItemsForCategory(cat.categoryId).length > 0">
+        <div class="item-row" *ngFor="let item of getItemsForCategory(cat.categoryId)">
+          <div class="ir-img">
+            <img *ngIf="item.imageUrl" [src]="item.imageUrl" [alt]="item.name">
+            <span *ngIf="!item.imageUrl">🍽️</span>
+          </div>
+          <div class="ir-info">
+            <div class="ir-top">
+              <span class="veg-dot" [class.veg]="item.veg" [class.nonveg]="!item.veg"></span>
+              <strong>{{ item.name }}</strong>
+              <span *ngIf="item.tags" class="item-tag-sm">{{ item.tags }}</span>
+            </div>
+            <p *ngIf="item.description" class="ir-desc">{{ item.description }}</p>
+          </div>
+          <div class="ir-price">
+            <strong>₹{{ item.discountedPrice || item.price }}</strong>
+            <del *ngIf="item.discountedPrice" class="ir-old">₹{{ item.price }}</del>
+          </div>
+          <div class="ir-actions">
+            <label class="avail-toggle" [title]="item.available ? 'Mark unavailable' : 'Mark available'">
+              <input type="checkbox" [checked]="item.available" (change)="toggleItem(item)">
+              <span class="at-track"><span class="at-thumb"></span></span>
+            </label>
+            <button class="btn btn-ghost btn-sm" (click)="openEditItem(item)">✏️</button>
+            <button class="btn btn-danger btn-sm" (click)="deleteItem(item.itemId)">🗑</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="no-items" *ngIf="getItemsForCategory(cat.categoryId).length === 0">
+        No items yet. <button class="link-btn" (click)="openAddItem(cat.categoryId)">Add one →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Item Form Modal ── -->
+<div class="modal-overlay" *ngIf="showItemForm" (click)="showItemForm = false">
+  <div class="modal-box card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>{{ editingItem ? 'Edit Item' : 'Add Item' }}</h3>
+      <button class="modal-close" (click)="showItemForm = false">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-grid-2">
+        <div class="form-group full">
+          <label class="form-label">Item Name *</label>
+          <input type="text" class="form-control" [(ngModel)]="itemForm.name" placeholder="e.g. Paneer Tikka">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Price (₹) *</label>
+          <input type="number" class="form-control" [(ngModel)]="itemForm.price" min="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Discounted Price (₹)</label>
+          <input type="number" class="form-control" [(ngModel)]="itemForm.discountedPrice" min="0">
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Description</label>
+          <input type="text" class="form-control" [(ngModel)]="itemForm.description" placeholder="Short description">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Image URL</label>
+          <input type="url" class="form-control" [(ngModel)]="itemForm.imageUrl" placeholder="https://...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tags</label>
+          <input type="text" class="form-control" [(ngModel)]="itemForm.tags" placeholder="bestseller, spicy, new">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Calories</label>
+          <input type="number" class="form-control" [(ngModel)]="itemForm.calories" min="0">
+        </div>
+        <div class="form-group veg-check">
+          <label class="form-label">Type</label>
+          <label class="radio-label">
+            <input type="radio" [value]="true" [(ngModel)]="itemForm.veg" name="vegType"> 🟢 Veg
+          </label>
+          <label class="radio-label">
+            <input type="radio" [value]="false" [(ngModel)]="itemForm.veg" name="vegType"> 🔴 Non-Veg
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" (click)="showItemForm = false">Cancel</button>
+      <button class="btn btn-primary" (click)="saveItem()" [disabled]="savingItem">
+        {{ savingItem ? 'Saving...' : (editingItem ? 'Save Changes' : 'Add Item') }}
+      </button>
+    </div>
+  </div>
+</div>

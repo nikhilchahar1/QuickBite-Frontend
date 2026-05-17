@@ -1,0 +1,70 @@
+<div class="page-header">
+  <div class="container">
+    <h1>📊 Admin Dashboard</h1>
+    <p>Platform overview and management</p>
+  </div>
+</div>
+
+<div class="container admin-body">
+  <app-spinner *ngIf="loading" message="Loading dashboard..."></app-spinner>
+
+  <div *ngIf="!loading">
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="sc-icon">📦</div>
+        <div class="sc-value">{{ stats.orders }}</div>
+        <div class="sc-label">Total Orders</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-icon">🏪</div>
+        <div class="sc-value">{{ stats.restaurants }}</div>
+        <div class="sc-label">Restaurants</div>
+      </div>
+      <div class="stat-card warning">
+        <div class="sc-icon">⏳</div>
+        <div class="sc-value">{{ stats.pending }}</div>
+        <div class="sc-label">Pending Approvals</div>
+      </div>
+      <div class="stat-card success">
+        <div class="sc-icon">💰</div>
+        <div class="sc-value">₹{{ stats.revenue.toLocaleString('en-IN') }}</div>
+        <div class="sc-label">Total Revenue</div>
+      </div>
+    </div>
+
+    <!-- Quick nav -->
+    <div class="admin-nav-grid">
+      <a *ngFor="let link of adminLinks" [routerLink]="link.route" class="admin-nav-card">
+        <span class="anc-icon">{{ link.icon }}</span>
+        <strong>{{ link.label }}</strong>
+        <span>{{ link.desc }}</span>
+      </a>
+    </div>
+
+    <!-- Recent orders -->
+    <div class="section-header" style="margin-top:40px">
+      <h2 class="section-title">Recent Orders</h2>
+      <a routerLink="/admin/orders" class="btn btn-outline btn-sm">View All →</a>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Order ID</th><th>Date</th><th>Amount</th><th>Payment</th><th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let o of recentOrders">
+            <td><strong>#{{ o.orderId }}</strong></td>
+            <td>{{ o.orderDate | date:'d MMM, h:mm a' }}</td>
+            <td>₹{{ o.finalAmount }}</td>
+            <td>{{ o.paymentMode }}</td>
+            <td><span class="badge" [class]="'status-' + o.orderStatus">{{ o.orderStatus }}</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

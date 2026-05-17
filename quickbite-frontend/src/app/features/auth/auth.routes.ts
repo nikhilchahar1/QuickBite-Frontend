@@ -1,0 +1,27 @@
+import { Routes } from '@angular/router';
+
+export const AUTH_ROUTES: Routes = [
+  {
+    path: '',
+    redirectTo: 'login',
+    pathMatch: 'full'
+  },
+  {
+    path: 'login',
+    loadComponent: () =>
+      import('./login/login.component').then(m => m.LoginComponent),
+    title: 'QuickBite — Login'
+  },
+  {
+    path: 'register',
+    loadComponent: () =>
+      import('./register/register.component').then(m => m.RegisterComponent),
+    title: 'QuickBite — Register'
+  },
+  {
+    path: 'oauth-callback',
+    loadComponent: () =>
+      import('./oauth-callback/oauth-callback.component')
+        .then(m => m.OAuthCallbackComponent)
+  }
+];

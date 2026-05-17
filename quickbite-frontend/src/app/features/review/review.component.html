@@ -1,0 +1,93 @@
+<div class="page-header">
+  <div class="container">
+    <a [routerLink]="['/orders', orderId]" class="back-link">← Back to Order</a>
+    <h1>⭐ Write a Review</h1>
+    <p>Order #{{ orderId }}</p>
+  </div>
+</div>
+
+<div class="container review-body">
+
+  <app-spinner *ngIf="loading" message="Loading order..."></app-spinner>
+
+  <!-- Already reviewed -->
+  <div class="card already-card" *ngIf="!loading && alreadyReviewed">
+    <div class="already-icon">✅</div>
+    <h3>Already Reviewed!</h3>
+    <p>You've already submitted a review for this order. Thank you!</p>
+    <a routerLink="/orders" class="btn btn-primary mt-4">My Orders</a>
+  </div>
+
+  <!-- Review Form -->
+  <div class="review-card card" *ngIf="!loading && !alreadyReviewed">
+
+    <!-- Food Rating -->
+    <div class="rating-section">
+      <h3>🍽️ Rate the Food</h3>
+      <p class="rating-sub">How was the quality and taste?</p>
+      <div class="stars-row">
+        <button
+          *ngFor="let s of stars"
+          class="star-btn"
+          [class.filled]="s <= (hoveredFood || foodRating)"
+          (mouseenter)="hoveredFood = s"
+          (mouseleave)="hoveredFood = 0"
+          (click)="foodRating = s">
+          ★
+        </button>
+      </div>
+      <div class="rating-label" *ngIf="hoveredFood || foodRating">
+        {{ getFoodLabel() }}
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Delivery Rating -->
+    <div class="rating-section">
+      <h3>🛵 Rate the Delivery</h3>
+      <p class="rating-sub">How was the delivery speed and experience?</p>
+      <div class="stars-row">
+        <button
+          *ngFor="let s of stars"
+          class="star-btn delivery-star"
+          [class.filled]="s <= (hoveredDelivery || deliveryRating)"
+          (mouseenter)="hoveredDelivery = s"
+          (mouseleave)="hoveredDelivery = 0"
+          (click)="deliveryRating = s">
+          ★
+        </button>
+      </div>
+      <div class="rating-label" *ngIf="hoveredDelivery || deliveryRating">
+        {{ getDeliveryLabel() }}
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Comment -->
+    <div class="rating-section">
+      <h3>💬 Write a Comment <span class="optional">(optional)</span></h3>
+      <textarea
+        class="form-control"
+        [(ngModel)]="comment"
+        placeholder="Tell others about your experience — food quality, packaging, delivery speed..."
+        rows="4"
+        style="margin-top:12px; resize:vertical">
+      </textarea>
+      <div class="char-count">{{ comment.length }} / 500</div>
+    </div>
+
+    <!-- Submit -->
+    <div class="review-submit">
+      <a [routerLink]="['/orders', orderId]" class="btn btn-ghost">Cancel</a>
+      <button
+        class="btn btn-primary"
+        (click)="submit()"
+        [disabled]="submitting || foodRating === 0">
+        <span *ngIf="submitting" class="btn-spinner"></span>
+        {{ submitting ? 'Submitting...' : '🚀 Submit Review' }}
+      </button>
+    </div>
+  </div>
+</div>

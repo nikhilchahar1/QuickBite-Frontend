@@ -1,0 +1,127 @@
+<div class="auth-page">
+  <div class="auth-split">
+
+    <!-- Left Panel -->
+    <div class="auth-left">
+      <div class="auth-left-content">
+        <a routerLink="/" class="auth-logo">🍕 Quick<strong>Bite</strong></a>
+        <h1>Join thousands of happy foodies</h1>
+        <p>Create your free account and start ordering from the best restaurants around you.</p>
+
+        <div class="auth-features">
+          <div class="auth-feature"><span>🎁</span><span>Free delivery on first order</span></div>
+          <div class="auth-feature"><span>💳</span><span>Pay via Card, Wallet or COD</span></div>
+          <div class="auth-feature"><span>📦</span><span>Live order tracking</span></div>
+          <div class="auth-feature"><span>⭐</span><span>Rate & review your meals</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Panel -->
+    <div class="auth-right">
+      <div class="auth-form-box fade-in">
+
+        <div class="auth-form-header">
+          <h2>Create account</h2>
+          <p>It's free and takes less than a minute</p>
+        </div>
+
+        <!-- Error -->
+        <div class="alert alert-error" *ngIf="error">
+          <span>⚠</span> {{ error }}
+        </div>
+
+        <!-- Full Name -->
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="fullName"
+            placeholder="Rahul Sharma"
+            [class.error]="error && !fullName"
+            autocomplete="name"
+          >
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input
+            type="email"
+            class="form-control"
+            [(ngModel)]="email"
+            placeholder="rahul@example.com"
+            [class.error]="error && !email"
+            autocomplete="email"
+          >
+        </div>
+
+        <!-- Phone (optional) -->
+        <div class="form-group">
+          <label class="form-label">
+            Phone Number
+            <span class="optional-tag">optional</span>
+          </label>
+          <input
+            type="tel"
+            class="form-control"
+            [(ngModel)]="phone"
+            placeholder="+91 98765 43210"
+            autocomplete="tel"
+          >
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="password-wrapper">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              class="form-control"
+              [(ngModel)]="password"
+              placeholder="Min. 6 characters"
+              [class.error]="error && password.length < 6 && password.length > 0"
+              (keyup.enter)="onRegister()"
+              autocomplete="new-password"
+            >
+            <button type="button" class="toggle-pass" (click)="showPassword = !showPassword">
+              {{ showPassword ? '🙈' : '👁' }}
+            </button>
+          </div>
+          <!-- Password strength bar -->
+          <div class="strength-bar" *ngIf="password.length > 0">
+            <div
+              class="strength-fill"
+              [style.width]="strengthWidth"
+              [class]="strengthClass">
+            </div>
+          </div>
+          <span class="strength-label" *ngIf="password.length > 0">{{ strengthLabel }}</span>
+        </div>
+
+        <!-- Submit -->
+        <button
+          class="btn btn-primary w-full"
+          (click)="onRegister()"
+          [disabled]="loading">
+          <span *ngIf="loading" class="btn-spinner"></span>
+          {{ loading ? 'Creating account...' : 'Create Free Account' }}
+        </button>
+
+        <!-- Note about role -->
+        <div class="role-note">
+          <span>ℹ️</span>
+          <span>Have your own restaurant? Mail now on <strong>quickbitesupport@gmail.com</strong> with your registered mail ID and restaurant details..!!</span>
+        </div>
+
+        <!-- Switch to Login -->
+        <div class="auth-switch">
+          Already have an account? <a routerLink="/login">Sign in</a>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,127 @@
+<div class="page-header">
+  <div class="container">
+    <h1>Checkout</h1>
+    <p>Almost there! Complete your order details below.</p>
+  </div>
+</div>
+
+<div class="container checkout-body">
+
+  <app-spinner *ngIf="loading" message="Loading your cart..."></app-spinner>
+
+  <div class="checkout-layout" *ngIf="!loading && cart">
+
+    <!-- ── LEFT: Delivery + Payment ── -->
+    <div class="checkout-main">
+
+      <!-- Delivery Address -->
+      <div class="checkout-card card">
+        <div class="section-icon">📍</div>
+        <h2>Delivery Address</h2>
+        <div class="form-group" style="margin-top:16px">
+          <label class="form-label">Full Address</label>
+          <textarea
+            class="form-control"
+            [(ngModel)]="deliveryAddress"
+            placeholder="House/Flat no., Street, Area, City, PIN code"
+            rows="3"
+          ></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Special Instructions <span class="optional">(optional)</span></label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="specialInstructions"
+            placeholder="e.g. Ring the bell, leave at door..."
+          >
+        </div>
+      </div>
+
+      <!-- Payment Mode -->
+      <div class="checkout-card card">
+        <div class="section-icon">💳</div>
+        <h2>Payment Method</h2>
+
+        <div class="payment-options">
+          <label *ngFor="let opt of paymentOptions"
+                 class="payment-option"
+                 [class.selected]="selectedPayment === opt.value">
+            <input type="radio" [value]="opt.value" [(ngModel)]="selectedPayment" name="payment">
+            <div class="po-icon">{{ opt.icon }}</div>
+            <div class="po-text">
+              <strong>{{ opt.label }}</strong>
+              <span>{{ opt.desc }}</span>
+            </div>
+            <div class="po-check" *ngIf="selectedPayment === opt.value">✓</div>
+          </label>
+        </div>
+
+        <!-- Razorpay test hint -->
+        <div class="rzp-hint" *ngIf="selectedPayment === 'RAZORPAY'">
+          <span>🧪</span>
+          <span>Test card: <code>4111 1111 1111 1111</code> · Any future expiry · Any CVV</span>
+        </div>
+
+        <!-- Wallet hint -->
+        <div class="wallet-hint" *ngIf="selectedPayment === 'WALLET'">
+          <span>💡</span>
+          <span>Make sure your wallet has sufficient balance.
+            <a routerLink="/wallet">Top up wallet →</a></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── RIGHT: Order Summary ── -->
+    <div class="checkout-summary">
+      <div class="summary-card card">
+        <h3>Order Summary</h3>
+
+        <!-- Items -->
+        <div class="summary-items">
+          <div class="si-row" *ngFor="let item of cart.items">
+            <span class="si-name">{{ item.itemName }} × {{ item.quantity }}</span>
+            <span class="si-price">₹{{ item.subtotal }}</span>
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span>₹{{ cart.totalPrice }}</span>
+        </div>
+        <div class="summary-row discount" *ngIf="cart.discount > 0">
+          <span>Discount ({{ cart.appliedPromoCode }})</span>
+          <span>− ₹{{ cart.discount }}</span>
+        </div>
+        <div class="summary-row">
+          <span>Delivery</span>
+          <span class="free">FREE</span>
+        </div>
+
+        <hr class="divider">
+
+        <div class="summary-row total">
+          <span>Total</span>
+          <span>₹{{ cart.finalPrice }}</span>
+        </div>
+
+        <div class="selected-payment-badge">
+          Paying via: <strong>{{ selectedPayment }}</strong>
+        </div>
+
+        <button
+          class="btn btn-primary w-full place-btn"
+          (click)="placeOrder()"
+          [disabled]="placing || !deliveryAddress.trim()">
+          <span *ngIf="placing" class="btn-spinner"></span>
+          {{ placing ? 'Placing order...' : '🚀 Place Order · ₹' + cart.finalPrice }}
+        </button>
+
+        <div class="checkout-secure">🔒 Safe & encrypted checkout</div>
+      </div>
+    </div>
+
+  </div>
+</div>

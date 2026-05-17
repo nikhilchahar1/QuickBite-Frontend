@@ -1,0 +1,16 @@
+.admin-body { padding:28px 0 64px; }
+.back-link  { display:inline-block;color:rgba(255,255,255,0.75);font-size:0.85rem;text-decoration:none;margin-bottom:10px;&:hover{color:white;} }
+.filter-row { display:flex; gap:12px; margin-bottom:20px; flex-wrap:wrap; }
+.user-cell  { display:flex; align-items:center; gap:10px; }
+.user-avatar-sm {
+  width:32px;height:32px;border-radius:50%;
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:white;font-size:0.78rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.role-select {
+  padding:6px 10px;border:1.5px solid var(--border);border-radius:var(--radius-md);
+  font-size:0.83rem;background:white;cursor:pointer;outline:none;
+  &:focus{border-color:var(--primary);}
+  &:disabled{opacity:0.5;}
+}

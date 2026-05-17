@@ -1,0 +1,24 @@
+.admin-body { padding:28px 0 64px; max-width:640px; }
+.back-link  { display:inline-block;color:rgba(255,255,255,0.75);font-size:0.85rem;text-decoration:none;margin-bottom:10px;&:hover{color:white;} }
+.notif-form { padding:32px; }
+
+.success-banner {
+  display:flex; align-items:center; gap:10px;
+  padding:14px 18px; background:var(--success-light); color:var(--success);
+  border-radius:var(--radius-md); border-left:4px solid var(--success);
+  font-weight:600; margin-bottom:24px; animation:fadeIn 0.3s ease;
+}
+
+.type-chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
+.type-chip {
+  padding:6px 14px; border:2px solid var(--border); border-radius:var(--radius-full);
+  font-size:0.8rem; font-weight:600; cursor:pointer; background:white;
+  font-family:var(--font-body); transition:all var(--transition);
+  &.selected{ background:rgba(229,57,53,0.08); border-color:var(--primary); color:var(--primary); }
+  &:hover:not(.selected){ border-color:var(--border-dark); }
+}
+
+.hint      { font-size:0.72rem; color:var(--text-muted); font-weight:400; text-transform:none; letter-spacing:0; }
+.form-hint { display:block; font-size:0.78rem; color:var(--text-muted); margin-top:6px; }
+
+.btn-spinner { width:16px;height:16px;border:2px solid rgba(255,255,255,0.4);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;display:inline-block; }

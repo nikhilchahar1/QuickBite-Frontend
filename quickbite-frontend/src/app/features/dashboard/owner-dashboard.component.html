@@ -1,0 +1,140 @@
+<div class="page-header">
+  <div class="container">
+    <h1>🏪 Owner Dashboard</h1>
+    <p>Manage your restaurants and track orders</p>
+  </div>
+</div>
+
+<div class="container dashboard-body">
+
+  <app-spinner *ngIf="loading" message="Loading dashboard..."></app-spinner>
+
+  <div *ngIf="!loading">
+
+    <!-- No restaurants yet -->
+    <div class="empty-state" *ngIf="restaurants.length === 0">
+      <div class="empty-icon">🏪</div>
+      <h3>No restaurants yet</h3>
+      <p>Register your first restaurant to get started</p>
+      <a routerLink="/owner/restaurant/new" class="btn btn-primary mt-4">
+        + Register Restaurant
+      </a>
+    </div>
+
+    <!-- Restaurants -->
+    <div *ngIf="restaurants.length > 0">
+
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <a routerLink="/owner/restaurant/new" class="qa-card">
+          <span class="qa-icon">➕</span>
+          <span>New Restaurant</span>
+        </a>
+        <a routerLink="/owner/orders" class="qa-card">
+          <span class="qa-icon">📋</span>
+          <span>View Orders</span>
+        </a>
+        <a [routerLink]="['/owner/menu', restaurants[0].restaurantId]" class="qa-card">
+          <span class="qa-icon">🍽️</span>
+          <span>Manage Menu</span>
+        </a>
+      </div>
+
+      <!-- Restaurant Cards -->
+      <h2 class="section-title" style="margin-bottom:20px">My Restaurants</h2>
+
+      <div class="r-cards">
+        <div *ngFor="let r of restaurants" class="r-owner-card card">
+
+          <div class="roc-header">
+            <div class="roc-img">
+              <img *ngIf="r.imageUrl" [src]="r.imageUrl" [alt]="r.name">
+              <span *ngIf="!r.imageUrl">🏪</span>
+            </div>
+            <div class="roc-info">
+              <h3>{{ r.name }}</h3>
+              <p>{{ r.cuisine }} · {{ r.city }}</p>
+              <div class="roc-badges">
+                <span class="badge" [class]="r.approved ? 'badge-success' : 'badge-warning'">
+                  {{ r.approved ? '✓ Approved' : '⏳ Pending Approval' }}
+                </span>
+                <span class="badge" [class]="r.open ? 'badge-success' : 'badge-error'">
+                  {{ r.open ? '● Open' : '● Closed' }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Open/Close toggle -->
+            <label class="open-toggle" *ngIf="r.approved" [title]="r.open ? 'Click to close' : 'Click to open'">
+              <input type="checkbox" [checked]="r.open"
+                     (change)="toggle(r)" [disabled]="togglingId === r.restaurantId">
+              <span class="ot-track">
+                <span class="ot-thumb"></span>
+              </span>
+            </label>
+          </div>
+
+          <!-- Stats row -->
+          <div class="roc-stats">
+            <div class="roc-stat">
+              <strong>★ {{ r.avgRating?.toFixed(1) || '0.0' }}</strong>
+              <span>Rating</span>
+            </div>
+            <div class="roc-stat">
+              <strong>{{ r.estimatedDeliveryMin || 30 }} min</strong>
+              <span>Delivery</span>
+            </div>
+            <div class="roc-stat">
+              <strong>₹{{ r.minOrderAmount || 0 }}</strong>
+              <span>Min Order</span>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="roc-actions">
+            <a [routerLink]="['/owner/restaurant', r.restaurantId]" class="btn btn-ghost btn-sm">
+              ✏️ Edit Details
+            </a>
+            <a [routerLink]="['/owner/menu', r.restaurantId]" class="btn btn-outline btn-sm">
+              🍽️ Manage Menu
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Orders -->
+      <div style="margin-top:40px" *ngIf="recentOrders.length > 0">
+        <div class="section-header">
+          <h2 class="section-title">Recent Orders</h2>
+          <a routerLink="/owner/orders" class="btn btn-outline btn-sm">View All →</a>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Date</th>
+                <th>Items</th>
+                <th>Amount</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let o of recentOrders" [routerLink]="['/orders', o.orderId]"
+                  style="cursor:pointer">
+                <td><strong>#{{ o.orderId }}</strong></td>
+                <td>{{ o.orderDate | date:'d MMM, h:mm a' }}</td>
+                <td>{{ o.orderItems?.length || 0 }} items</td>
+                <td><strong>₹{{ o.finalAmount }}</strong></td>
+                <td>
+                  <span class="badge" [class]="'status-' + o.orderStatus">{{ o.orderStatus }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

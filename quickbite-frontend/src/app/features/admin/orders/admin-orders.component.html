@@ -1,0 +1,36 @@
+<div class="page-header">
+  <div class="container">
+    <a routerLink="/admin" class="back-link">← Dashboard</a>
+    <h1>📦 All Orders</h1>
+    <p>{{ filtered.length }} orders</p>
+  </div>
+</div>
+<div class="container admin-body">
+  <app-spinner *ngIf="loading" message="Loading orders..."></app-spinner>
+  <div *ngIf="!loading">
+    <div class="filter-row">
+      <select class="form-control" style="max-width:200px" [(ngModel)]="selectedStatus" (change)="filter()">
+        <option value="">All Statuses</option>
+        <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
+      </select>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Date</th><th>Restaurant</th><th>Amount</th><th>Payment</th><th>Status</th><th>Track</th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let o of filtered">
+            <td><strong>#{{ o.orderId }}</strong></td>
+            <td>{{ formatDate(o.orderDate) }}</td>
+            <td>#{{ o.restaurantId }}</td>
+            <td>₹{{ o.finalAmount }}</td>
+            <td>{{ o.paymentMode }}</td>
+            <td><span class="badge" [class]="'status-'+o.orderStatus">{{ o.orderStatus }}</span></td>
+            <td><a [routerLink]="['/orders',o.orderId]" class="btn btn-ghost btn-sm">View</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

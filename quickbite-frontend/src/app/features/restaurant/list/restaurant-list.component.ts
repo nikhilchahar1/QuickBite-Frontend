@@ -1,0 +1,122 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule, ActivatedRoute, Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { RestaurantService } from '../../../core/services/restaurant.service';
+import { SpinnerComponent } from '../../../shared/components/spinner/spinner.component';
+import { Restaurant } from '../../../shared/models/models';
+
+@Component({
+  selector: 'app-restaurant-list',
+  standalone: true,
+  imports: [CommonModule, RouterModule, FormsModule, SpinnerComponent],
+  templateUrl: './restaurant-list.component.html',
+  styleUrls: ['./restaurant-list.component.scss']
+})
+export class RestaurantListComponent implements OnInit {
+  allRestaurants: Restaurant[]      = [];
+  filteredRestaurants: Restaurant[] = [];
+  loading = false;
+
+  // Filters
+  searchQuery  = '';
+  selectedCity    = '';
+  selectedCuisine = '';
+  selectedSort    = 'rating';
+  showOpenOnly    = false;
+
+  cities   = ['All', 'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Pune', 'Agra'];
+  cuisines = ['All', 'Indian', 'Chinese', 'Italian', 'Mexican', 'Thai', 'Japanese', 'Continental', 'Fast Food'];
+  sortOptions = [
+    { value: 'rating',   label: 'Top Rated' },
+    { value: 'delivery', label: 'Fastest Delivery' },
+    { value: 'name',     label: 'A → Z' },
+  ];
+
+  constructor(
+    private restaurantService: RestaurantService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
+
+  ngOnInit(): void {
+    // Read query params from URL (set by Home page)
+    this.route.queryParams.subscribe(params => {
+      this.searchQuery      = params['search']  || '';
+      this.selectedCuisine  = params['cuisine'] || '';
+      this.selectedCity     = params['city']    || '';
+      this.loadAll();
+    });
+  }
+
+  private loadAll(): void {
+    this.loading = true;
+    this.restaurantService.getAll().subscribe({
+      next: list => {
+        this.allRestaurants = list;
+        this.applyFilters();
+        this.loading = false;
+      },
+      error: () => { this.loading = false; }
+    });
+  }
+
+  applyFilters(): void {
+    let result = [...this.allRestaurants];
+
+    // Search
+    if (this.searchQuery.trim()) {
+      const q = this.searchQuery.toLowerCase();
+      result = result.filter(r =>
+        r.name.toLowerCase().includes(q) ||
+        r.cuisine.toLowerCase().includes(q) ||
+        r.city.toLowerCase().includes(q)
+      );
+    }
+
+    // City
+    if (this.selectedCity && this.selectedCity !== 'All') {
+      result = result.filter(r =>
+        r.city.toLowerCase() === this.selectedCity.toLowerCase()
+      );
+    }
+
+    // Cuisine
+    if (this.selectedCuisine && this.selectedCuisine !== 'All') {
+      result = result.filter(r =>
+        r.cuisine.toLowerCase() === this.selectedCuisine.toLowerCase()
+      );
+    }
+
+    // Open only
+    if (this.showOpenOnly) {
+      result = result.filter(r => r.open);
+    }
+
+    // Sort
+    if (this.selectedSort === 'rating') {
+      result.sort((a, b) => (b.avgRating || 0) - (a.avgRating || 0));
+    } else if (this.selectedSort === 'delivery') {
+      result.sort((a, b) => (a.estimatedDeliveryMin || 30) - (b.estimatedDeliveryMin || 30));
+    } else if (this.selectedSort === 'name') {
+      result.sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    this.filteredRestaurants = result;
+  }
+
+  clearFilters(): void {
+    this.searchQuery     = '';
+    this.selectedCity    = '';
+    this.selectedCuisine = '';
+    this.showOpenOnly    = false;
+    this.selectedSort    = 'rating';
+    this.applyFilters();
+    this.router.navigate(['/restaurants']);
+  }
+
+  get hasActiveFilters(): boolean {
+    return !!(this.searchQuery || this.selectedCity ||
+              this.selectedCuisine || this.showOpenOnly);
+  }
+}

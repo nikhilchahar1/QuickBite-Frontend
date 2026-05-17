@@ -1,0 +1,13 @@
+.admin-body { padding:28px 0 64px; }
+.back-link  { display:inline-block;color:rgba(255,255,255,0.75);font-size:0.85rem;text-decoration:none;margin-bottom:10px;&:hover{color:white;} }
+.reviews-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.review-card  { padding:20px; }
+.rv-header    { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; gap:12px; }
+.rv-stars     { color:var(--accent); font-size:1rem; display:block; margin-bottom:4px; }
+.rv-sub       { font-size:0.75rem; color:var(--text-muted); }
+.rv-badges    { display:flex; flex-direction:column; align-items:flex-end; gap:4px; }
+.rv-date      { font-size:0.75rem; color:var(--text-muted); }
+.rv-comment   { font-size:0.85rem; color:var(--text-soft); font-style:italic; margin-bottom:10px; line-height:1.5; }
+.rv-delivery  { font-size:0.82rem; color:var(--text-muted); margin-bottom:12px; }
+.rv-actions   { display:flex; gap:8px; }
+@media(max-width:768px){.reviews-grid{grid-template-columns:1fr;}}

@@ -1,0 +1,165 @@
+.cart-body { padding: 32px 0 64px; }
+
+.cart-layout {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 28px;
+  align-items: start;
+}
+
+/* ── Cart Restaurant Header ── */
+.cart-restaurant {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  background: var(--bg-soft);
+  border-radius: var(--radius-md);
+  margin-bottom: 4px;
+  border: 1px solid var(--border);
+
+  img, .cart-rest-icon {
+    width: 52px; height: 52px;
+    border-radius: var(--radius-md);
+    object-fit: cover; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg-muted); font-size: 1.5rem;
+  }
+
+  div {
+    flex: 1;
+    strong { font-size: 0.95rem; font-weight: 700; }
+    p { font-size: 0.8rem; color: var(--text-muted); margin-top: 3px; }
+  }
+}
+
+.add-more-btn {
+  font-size: 0.82rem; font-weight: 700;
+  color: var(--primary); text-decoration: none;
+  white-space: nowrap;
+  &:hover { text-decoration: underline; }
+}
+
+/* ── Cart Item ── */
+.cart-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+  &:last-of-type { border-bottom: none; }
+}
+
+.ci-img {
+  width: 68px; height: 58px;
+  border-radius: var(--radius-md);
+  overflow: hidden; flex-shrink: 0;
+  img { width: 100%; height: 100%; object-fit: cover; }
+}
+
+.ci-img-placeholder {
+  background: var(--bg-muted);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+}
+
+.ci-info {
+  flex: 1; min-width: 0;
+  h4 { font-size: 0.92rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+}
+
+.ci-price { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+
+.ci-controls {
+  display: flex; align-items: center; gap: 14px; flex-shrink: 0;
+}
+
+.qty-ctrl {
+  display: flex; align-items: center;
+  border: 2px solid var(--primary); border-radius: var(--radius-full); overflow: hidden;
+
+  button {
+    width: 30px; height: 30px;
+    background: white; border: none;
+    font-size: 1rem; font-weight: 700;
+    color: var(--primary); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background var(--transition);
+    &:hover:not(:disabled) { background: rgba(229,57,53,0.08); }
+    &:disabled { opacity: 0.4; cursor: not-allowed; }
+  }
+
+  span {
+    min-width: 26px; text-align: center;
+    font-size: 0.88rem; font-weight: 700; color: var(--primary);
+  }
+}
+
+.ci-subtotal { font-weight: 700; font-size: 0.95rem; min-width: 60px; text-align: right; }
+
+.ci-remove {
+  background: none; border: none; cursor: pointer; font-size: 1rem;
+  opacity: 0.5; transition: opacity var(--transition); padding: 4px;
+  &:hover { opacity: 1; }
+}
+
+/* ── Promo ── */
+.promo-section {
+  padding: 20px 0;
+  border-top: 1px solid var(--border);
+  margin-top: 8px;
+  h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 12px; }
+}
+
+.promo-input-row {
+  display: flex; gap: 10px;
+  .form-control { flex: 1; font-weight: 600; letter-spacing: 0.05em; }
+}
+
+.promo-applied {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px;
+  background: var(--success-light); border-radius: var(--radius-md);
+  border: 1px solid var(--success);
+  font-size: 0.88rem; color: var(--success);
+}
+
+.promo-remove-btn {
+  background: none; border: none; cursor: pointer;
+  font-size: 0.8rem; color: var(--error); font-weight: 600;
+  &:hover { text-decoration: underline; }
+}
+
+.cart-actions { padding-top: 12px; }
+
+/* ── Summary Card ── */
+.summary-card {
+  padding: 24px;
+  position: sticky;
+  top: calc(var(--nav-height) + 16px);
+  h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 0; }
+}
+
+.summary-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 0; font-size: 0.9rem; color: var(--text-soft);
+  &.total { font-size: 1.1rem; font-weight: 800; color: var(--text); padding-top: 14px; }
+  &.discount span:last-child { color: var(--success); font-weight: 600; }
+}
+
+.free-delivery { color: var(--success); font-weight: 600; }
+
+.secure-note {
+  text-align: center; font-size: 0.78rem; color: var(--text-muted);
+  margin-top: 12px; line-height: 1.5;
+}
+
+@media (max-width: 860px) {
+  .cart-layout { grid-template-columns: 1fr; }
+  .summary-card { position: static; }
+}
+
+@media (max-width: 580px) {
+  .ci-img { width: 52px; height: 46px; }
+  .ci-controls { gap: 8px; }
+}

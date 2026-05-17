@@ -1,0 +1,33 @@
+.manage-body { padding: 32px 0 64px; max-width: 860px; }
+.back-link { display:inline-block; color:rgba(255,255,255,0.75); font-size:0.85rem; text-decoration:none; margin-bottom:10px; &:hover{color:white;} }
+
+.manage-card { padding: 32px; }
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 24px;
+  .full { grid-column: 1 / -1; }
+}
+
+.opt { font-size:0.72rem; color:var(--text-muted); font-weight:400; text-transform:none; letter-spacing:0; }
+
+.img-preview {
+  width: 200px; height: 140px;
+  object-fit: cover; border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+
+.manage-actions {
+  display: flex; justify-content: flex-end; gap: 12px;
+  margin-top: 8px; padding-top: 24px; border-top: 1px solid var(--border);
+}
+
+.btn-spinner {
+  width:16px; height:16px; border:2px solid rgba(255,255,255,0.4);
+  border-top-color:white; border-radius:50%; animation:spin 0.7s linear infinite; display:inline-block;
+}
+
+@media (max-width: 600px) {
+  .form-grid { grid-template-columns: 1fr; }
+}

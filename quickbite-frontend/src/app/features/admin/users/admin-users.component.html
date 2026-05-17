@@ -1,0 +1,49 @@
+<div class="page-header">
+  <div class="container">
+    <a routerLink="/admin" class="back-link">← Dashboard</a>
+    <h1>👥 User Management</h1>
+    <p>{{ filtered.length }} users</p>
+  </div>
+</div>
+
+<div class="container admin-body">
+  <app-spinner *ngIf="loading" message="Loading users..."></app-spinner>
+
+  <div *ngIf="!loading">
+    <div class="filter-row">
+      <input type="text" class="form-control" style="max-width:300px"
+             [(ngModel)]="searchQuery" (ngModelChange)="filter()" placeholder="Search by name or email...">
+      <select class="form-control" style="max-width:180px" [(ngModel)]="selectedRole" (change)="filter()">
+        <option value="">All Roles</option>
+        <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
+      </select>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Name</th><th>Email</th><th>Role</th><th>Change Role</th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let u of filtered">
+            <td>
+              <div class="user-cell">
+                <div class="user-avatar-sm">{{ u.fullName?.charAt(0) || '?' }}</div>
+                <strong>{{ u.fullName }}</strong>
+              </div>
+            </td>
+            <td>{{ u.email }}</td>
+            <td><span class="badge badge-neutral">{{ u.role }}</span></td>
+            <td>
+              <select class="role-select" [value]="u.role"
+                      (change)="changeRole(u.email, $any($event.target).value)"
+                      [disabled]="changingRoleFor === u.email">
+                <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
+              </select>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

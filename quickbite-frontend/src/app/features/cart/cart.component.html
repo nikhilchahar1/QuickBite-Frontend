@@ -1,0 +1,134 @@
+<div class="page-header">
+  <div class="container">
+    <h1>🛒 Your Cart</h1>
+    <p *ngIf="!isEmpty">{{ cart!.itemCount }} item{{ cart!.itemCount > 1 ? 's' : '' }} from {{ restaurant?.name || 'restaurant' }}</p>
+  </div>
+</div>
+
+<div class="container cart-body">
+
+  <app-spinner *ngIf="loading" message="Loading cart..."></app-spinner>
+
+  <!-- Empty Cart -->
+  <div class="empty-state" *ngIf="!loading && isEmpty">
+    <div class="empty-icon">🛒</div>
+    <h3>Your cart is empty</h3>
+    <p>Looks like you haven't added anything yet</p>
+    <a routerLink="/restaurants" class="btn btn-primary mt-4">Browse Restaurants</a>
+  </div>
+
+  <!-- Cart Layout -->
+  <div class="cart-layout" *ngIf="!loading && !isEmpty">
+
+    <!-- ── Items ── -->
+    <div class="cart-items">
+
+      <!-- Restaurant header -->
+      <div class="cart-restaurant" *ngIf="restaurant">
+        <img *ngIf="restaurant.imageUrl" [src]="restaurant.imageUrl" [alt]="restaurant.name">
+        <div *ngIf="!restaurant.imageUrl" class="cart-rest-icon">🏪</div>
+        <div>
+          <strong>{{ restaurant.name }}</strong>
+          <p>{{ restaurant.cuisine }} · {{ restaurant.city }}</p>
+        </div>
+        <a [routerLink]="['/restaurants', restaurant.restaurantId]" class="add-more-btn">
+          + Add more items
+        </a>
+      </div>
+
+      <!-- Cart item rows -->
+      <div class="cart-item" *ngFor="let item of cart!.items">
+        <div class="ci-img" *ngIf="item.itemImageUrl">
+          <img [src]="item.itemImageUrl" [alt]="item.itemName">
+        </div>
+        <div class="ci-img ci-img-placeholder" *ngIf="!item.itemImageUrl">🍽️</div>
+
+        <div class="ci-info">
+          <h4>{{ item.itemName }}</h4>
+          <p class="ci-price">₹{{ item.price }} each</p>
+        </div>
+
+        <div class="ci-controls">
+          <div class="qty-ctrl">
+            <button (click)="updateQty(item.cartItemId, -1, item.quantity)"
+                    [disabled]="updatingItemId === item.cartItemId">−</button>
+            <span>{{ item.quantity }}</span>
+            <button (click)="updateQty(item.cartItemId, +1, item.quantity)"
+                    [disabled]="updatingItemId === item.cartItemId">+</button>
+          </div>
+          <span class="ci-subtotal">₹{{ item.subtotal }}</span>
+          <button class="ci-remove" (click)="removeItem(item.cartItemId)" title="Remove">🗑</button>
+        </div>
+      </div>
+
+      <!-- Promo Code -->
+      <div class="promo-section">
+        <h4>🎟 Promo Code</h4>
+        <div *ngIf="!cart!.appliedPromoCode" class="promo-input-row">
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="promoCode"
+            placeholder="Enter promo code"
+            (keyup.enter)="applyPromo()"
+            style="text-transform:uppercase"
+          >
+          <button class="btn btn-outline btn-sm" (click)="applyPromo()" [disabled]="applyingPromo">
+            {{ applyingPromo ? '...' : 'Apply' }}
+          </button>
+        </div>
+        <div *ngIf="cart!.appliedPromoCode" class="promo-applied">
+          <span>✓ <strong>{{ cart!.appliedPromoCode }}</strong> applied</span>
+          <button class="promo-remove-btn" (click)="removePromo()">Remove</button>
+        </div>
+      </div>
+
+      <!-- Clear cart -->
+      <div class="cart-actions">
+        <button class="btn btn-ghost btn-sm" (click)="clearCart()" [disabled]="clearingCart">
+          🗑 {{ clearingCart ? 'Clearing...' : 'Clear Cart' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Order Summary ── -->
+    <div class="order-summary">
+      <div class="summary-card card">
+        <h3>Order Summary</h3>
+        <hr class="divider">
+
+        <div class="summary-row">
+          <span>Subtotal ({{ cart!.itemCount }} items)</span>
+          <span>₹{{ cart!.totalPrice }}</span>
+        </div>
+        <div class="summary-row discount" *ngIf="cart!.discount > 0">
+          <span>Discount</span>
+          <span>− ₹{{ cart!.discount }}</span>
+        </div>
+        <div class="summary-row">
+          <span>Delivery fee</span>
+          <span class="free-delivery">FREE</span>
+        </div>
+
+        <hr class="divider">
+
+        <div class="summary-row total">
+          <span>Total</span>
+          <span>₹{{ cart!.finalPrice }}</span>
+        </div>
+
+        <button
+          class="btn btn-primary w-full"
+          style="margin-top:20px; padding:15px 24px; font-size:1rem"
+          (click)="goToCheckout()"
+          [disabled]="isEmpty">
+          Proceed to Checkout →
+        </button>
+
+        <div class="secure-note">
+          🔒 Safe & secure checkout · COD / Wallet / Razorpay
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

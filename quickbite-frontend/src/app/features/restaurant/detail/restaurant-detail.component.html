@@ -1,0 +1,171 @@
+<div *ngIf="loading">
+  <app-spinner message="Loading menu..."></app-spinner>
+</div>
+
+<div *ngIf="!loading && restaurant">
+
+  <!-- ── Restaurant Hero Banner ── -->
+  <div class="r-hero">
+    <div class="r-hero-img">
+      <img *ngIf="restaurant.imageUrl" [src]="restaurant.imageUrl" [alt]="restaurant.name">
+      <div *ngIf="!restaurant.imageUrl" class="r-hero-placeholder">🏪</div>
+      <div class="r-hero-overlay"></div>
+    </div>
+    <div class="r-hero-info container">
+      <div class="r-info-box">
+        <div class="r-info-main">
+          <h1>{{ restaurant.name }}</h1>
+          <p class="r-cuisine-sub">{{ restaurant.cuisine }} Cuisine</p>
+          <p *ngIf="restaurant.description" class="r-desc-text">{{ restaurant.description }}</p>
+
+          <div class="r-badges">
+            <span class="rbadge">
+              ★ {{ restaurant.avgRating?.toFixed(1) || '4.0' }}
+            </span>
+            <span class="rbadge">
+              🕐 {{ restaurant.estimatedDeliveryMin || 30 }} min
+            </span>
+            <span class="rbadge">
+              📍 {{ restaurant.city }}
+            </span>
+            <span class="rbadge" [class.open-badge]="restaurant.open" [class.closed-badge]="!restaurant.open">
+              {{ restaurant.open ? '● Open Now' : '● Closed' }}
+            </span>
+          </div>
+
+          <div class="r-extra-info">
+            <span>🛵 Delivers within {{ restaurant.deliveryRadius || 5 }} km</span>
+            <span>·</span>
+            <span>₹{{ restaurant.minOrderAmount || 0 }} minimum order</span>
+            <span *ngIf="restaurant.phone">· 📞 {{ restaurant.phone }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Main Content ── -->
+  <div class="detail-body container">
+
+    <div class="detail-layout">
+
+      <!-- ── LEFT: Category Nav (Sticky) ── -->
+      <aside class="cat-nav">
+        <div class="cat-nav-inner">
+          <h4 class="cat-nav-title">Menu</h4>
+
+          <!-- Veg filter -->
+          <label class="veg-toggle">
+            <input type="checkbox" [checked]="vegOnly" (change)="vegOnly = $any($event.target).checked">
+            <span class="veg-track">
+              <span class="veg-thumb"></span>
+            </span>
+            <span class="veg-label">🌿 Veg Only</span>
+          </label>
+
+          <nav class="cat-links">
+            <button *ngFor="let cat of filteredCategories"
+                    class="cat-link"
+                    (click)="scrollToCategory(cat.categoryId)">
+              {{ cat.name }}
+              <span class="cat-count">{{ cat.items.length }}</span>
+            </button>
+          </nav>
+        </div>
+      </aside>
+
+      <!-- ── RIGHT: Menu Items ── -->
+      <main class="menu-content">
+
+        <!-- Category section -->
+        <div *ngFor="let cat of filteredCategories"
+             class="category-section"
+             [id]="'cat-' + cat.categoryId">
+
+          <div class="cat-header">
+            <h2>{{ cat.name }}</h2>
+            <span class="cat-item-count">{{ cat.items.length }} items</span>
+          </div>
+
+          <div class="items-grid">
+            <div *ngFor="let item of cat.items" class="item-card">
+
+              <!-- Item image -->
+              <div class="item-img" *ngIf="item.imageUrl">
+                <img [src]="item.imageUrl" [alt]="item.name" loading="lazy">
+              </div>
+
+              <div class="item-body">
+                <!-- Veg/NonVeg indicator -->
+                <div class="item-top">
+                  <span class="veg-indicator" [class.veg]="item.veg" [class.nonveg]="!item.veg"
+                        [title]="item.veg ? 'Vegetarian' : 'Non-Vegetarian'">
+                  </span>
+                  <span *ngIf="item.tags" class="item-tag">{{ item.tags }}</span>
+                </div>
+
+                <h3 class="item-name">{{ item.name }}</h3>
+                <p *ngIf="item.description" class="item-desc">{{ item.description }}</p>
+
+                <div class="item-footer">
+                  <div class="item-price-wrap">
+                    <span class="item-price">₹{{ item.discountedPrice || item.price }}</span>
+                    <span *ngIf="item.discountedPrice" class="item-old-price">₹{{ item.price }}</span>
+                  </div>
+
+                  <!-- Add/qty controls -->
+                  <div class="item-actions" *ngIf="auth.isCustomer()">
+                    <ng-container *ngIf="getItemQtyInCart(item.itemId) === 0; else qtyControls">
+                      <button
+                        class="add-btn"
+                        (click)="addToCart(item)"
+                        [disabled]="addingItemId === item.itemId || !restaurant.open">
+                        <span *ngIf="addingItemId === item.itemId">...</span>
+                        <span *ngIf="addingItemId !== item.itemId">+ Add</span>
+                      </button>
+                    </ng-container>
+
+                    <ng-template #qtyControls>
+                      <div class="qty-ctrl">
+                        <button (click)="removeFromCart(item.itemId)">−</button>
+                        <span>{{ getItemQtyInCart(item.itemId) }}</span>
+                        <button (click)="addToCart(item)">+</button>
+                      </div>
+                    </ng-template>
+                  </div>
+
+                  <!-- Guest: prompt to login -->
+                  <button
+                    *ngIf="!auth.isLoggedIn()"
+                    class="add-btn"
+                    (click)="addToCart(item)">
+                    + Add
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty menu -->
+        <div class="empty-state" *ngIf="filteredCategories.length === 0">
+          <div class="empty-icon">🍽️</div>
+          <h3>No items available</h3>
+          <p *ngIf="vegOnly">No veg items found. Try turning off the veg filter.</p>
+          <p *ngIf="!vegOnly">This restaurant hasn't added menu items yet.</p>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ── Floating Cart Bar ── -->
+  <div class="cart-bar" *ngIf="auth.isCustomer() && cartItemCount > 0">
+    <div class="cart-bar-inner container">
+      <div class="cart-bar-info">
+        <span class="cart-bar-count">{{ cartItemCount }} item{{ cartItemCount > 1 ? 's' : '' }} in cart</span>
+        <span class="cart-bar-total" *ngIf="currentCart">· ₹{{ currentCart.finalPrice }}</span>
+      </div>
+      <button class="btn btn-primary" (click)="goToCart()">View Cart →</button>
+    </div>
+  </div>
+</div>

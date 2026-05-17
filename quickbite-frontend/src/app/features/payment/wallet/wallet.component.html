@@ -1,0 +1,107 @@
+<div class="page-header">
+  <div class="container">
+    <h1>💰 My Wallet</h1>
+    <p>Manage your QuickBite wallet balance</p>
+  </div>
+</div>
+
+<div class="container wallet-body">
+
+  <app-spinner *ngIf="loading" message="Loading wallet..."></app-spinner>
+
+  <div *ngIf="!loading" class="wallet-layout">
+
+    <!-- ── LEFT: Balance + Top-up ── -->
+    <div class="wallet-left">
+
+      <!-- Balance Card -->
+      <div class="balance-card">
+        <div class="balance-icon">💳</div>
+        <div class="balance-label">Available Balance</div>
+        <div class="balance-amount">₹{{ wallet?.balance?.toFixed(2) || '0.00' }}</div>
+        <div class="balance-note">Use at checkout with 0% extra charges</div>
+      </div>
+
+      <!-- Top-up Card -->
+      <div class="card topup-card">
+        <h3>Add Money to Wallet</h3>
+        <p class="topup-sub">Choose a quick amount or enter manually</p>
+
+        <!-- Quick amounts -->
+        <div class="quick-amounts">
+          <button *ngFor="let amt of quickAmounts"
+                  class="quick-btn"
+                  [class.selected]="topUpAmount === amt"
+                  (click)="setQuickAmount(amt)">
+            + ₹{{ amt }}
+          </button>
+        </div>
+
+        <!-- Custom amount -->
+        <div class="form-group" style="margin-top:16px">
+          <label class="form-label">Or enter amount</label>
+          <div class="amount-input-wrap">
+            <span class="currency-symbol">₹</span>
+            <input
+              type="number"
+              class="form-control amount-input"
+              [(ngModel)]="topUpAmount"
+              placeholder="Enter amount"
+              min="10"
+            >
+          </div>
+        </div>
+
+        <button
+          class="btn btn-primary w-full"
+          (click)="topUp()"
+          [disabled]="toppingUp || !topUpAmount">
+          <span *ngIf="toppingUp" class="btn-spinner"></span>
+          {{ toppingUp ? 'Adding...' : '+ Add ₹' + (topUpAmount || '0') + ' to Wallet' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- ── RIGHT: Transaction History ── -->
+    <div class="wallet-right">
+      <div class="card history-card">
+        <div class="history-header">
+          <h3>Transaction History</h3>
+          <span class="badge badge-neutral">{{ statements.length }} transactions</span>
+        </div>
+
+        <div class="empty-state" *ngIf="statements.length === 0" style="padding:40px">
+          <div class="empty-icon">📋</div>
+          <h3>No transactions yet</h3>
+          <p>Add money to see your history</p>
+        </div>
+
+        <div class="statements-list" *ngIf="statements.length > 0">
+          <div *ngFor="let stmt of statements"
+               class="stmt-row"
+               [class.credit]="stmt.type === 'CREDIT'"
+               [class.debit]="stmt.type === 'DEBIT'">
+
+            <div class="stmt-icon">
+              {{ stmt.type === 'CREDIT' ? '↑' : '↓' }}
+            </div>
+
+            <div class="stmt-info">
+              <span class="stmt-desc">{{ stmt.description }}</span>
+              <span class="stmt-date">{{ formatDate(stmt.createdAt) }}</span>
+            </div>
+
+            <div class="stmt-right">
+              <span class="stmt-amount" [class.credit-amt]="stmt.type === 'CREDIT'"
+                                        [class.debit-amt]="stmt.type === 'DEBIT'">
+                {{ stmt.type === 'CREDIT' ? '+' : '−' }} ₹{{ stmt.amount }}
+              </span>
+              <span class="stmt-balance">Bal: ₹{{ stmt.balanceAfter?.toFixed(2) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

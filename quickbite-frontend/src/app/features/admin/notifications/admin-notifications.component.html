@@ -1,0 +1,49 @@
+<div class="page-header">
+  <div class="container">
+    <a routerLink="/admin" class="back-link">← Dashboard</a>
+    <h1>📢 Send Notifications</h1>
+    <p>Broadcast messages to users</p>
+  </div>
+</div>
+
+<div class="container admin-body">
+  <div class="notif-form card">
+
+    <div class="success-banner" *ngIf="sent">
+      <span>🎉</span> Notifications sent successfully!
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Notification Type</label>
+      <div class="type-chips">
+        <button *ngFor="let t of types" class="type-chip"
+                [class.selected]="selectedType === t" (click)="selectedType = t">
+          {{ t }}
+        </button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Title *</label>
+      <input type="text" class="form-control" [(ngModel)]="title" placeholder="e.g. Special offer just for you!">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Message *</label>
+      <textarea class="form-control" [(ngModel)]="message" rows="4"
+                placeholder="Write your notification message here..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Recipient User IDs * <span class="hint">(comma-separated)</span></label>
+      <input type="text" class="form-control" [(ngModel)]="recipientIds"
+             placeholder="e.g. 1, 2, 3, 5">
+      <small class="form-hint">Enter the user IDs you want to notify. You can find IDs in the Users section.</small>
+    </div>
+
+    <button class="btn btn-primary" (click)="sendBulk()" [disabled]="sending">
+      <span *ngIf="sending" class="btn-spinner"></span>
+      {{ sending ? 'Sending...' : '📢 Send Notification' }}
+    </button>
+  </div>
+</div>

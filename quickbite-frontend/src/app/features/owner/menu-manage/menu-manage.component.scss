@@ -1,0 +1,77 @@
+.menu-body { padding: 28px 0 64px; }
+.back-link { display:inline-block; color:rgba(255,255,255,0.75); font-size:0.85rem; text-decoration:none; margin-bottom:10px; &:hover{color:white;} }
+
+.top-bar { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; h2{font-size:1.1rem;font-weight:800;} }
+
+.inline-form { display:flex; gap:12px; align-items:center; padding:16px 20px; margin-bottom:16px; }
+
+.cat-section { margin-bottom:20px; padding:0; overflow:hidden; }
+.cat-header { display:flex; justify-content:space-between; align-items:center; padding:16px 20px; border-bottom:1px solid var(--border); h3{font-size:1rem;font-weight:800;} }
+.item-cnt { font-size:0.75rem; color:var(--text-muted); display:block; margin-top:2px; }
+.cat-actions { display:flex; gap:8px; }
+
+.items-table { padding: 0 8px; }
+
+.item-row {
+  display:flex; align-items:center; gap:14px;
+  padding:14px 12px; border-bottom:1px solid var(--border);
+  &:last-child { border-bottom:none; }
+}
+
+.ir-img {
+  width:52px; height:46px; border-radius:var(--radius-sm); overflow:hidden;
+  background:var(--bg-muted); flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:1.2rem;
+  img{width:100%;height:100%;object-fit:cover;}
+}
+
+.ir-info { flex:1; min-width:0; }
+.ir-top  { display:flex; align-items:center; gap:8px; margin-bottom:4px; strong{font-size:0.88rem;} }
+.ir-desc { font-size:0.75rem; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+.veg-dot {
+  width:12px; height:12px; border-radius:50%; flex-shrink:0;
+  &.veg{background:var(--success);} &.nonveg{background:var(--error);}
+}
+
+.item-tag-sm {
+  font-size:0.65rem; font-weight:700; text-transform:uppercase;
+  padding:2px 6px; border-radius:var(--radius-full);
+  background:rgba(255,152,0,0.12); color:var(--accent);
+}
+
+.ir-price { text-align:right; flex-shrink:0; strong{font-size:0.92rem;display:block;} }
+.ir-old   { font-size:0.75rem; color:var(--text-muted); }
+
+.ir-actions { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+
+/* Availability Toggle */
+.avail-toggle {
+  cursor:pointer;
+  input[type="checkbox"]{display:none;}
+  &:has(input:checked) .at-track{background:var(--success);}
+  &:has(input:checked) .at-thumb{transform:translateX(16px);}
+}
+.at-track { display:block; width:34px; height:18px; border-radius:9px; background:var(--border-dark); position:relative; transition:background var(--transition); }
+.at-thumb { position:absolute; top:2px; left:2px; width:14px; height:14px; border-radius:50%; background:white; box-shadow:0 1px 3px rgba(0,0,0,0.2); transition:transform var(--transition); }
+
+.no-items { padding:16px 20px; font-size:0.85rem; color:var(--text-muted); }
+.link-btn  { background:none; border:none; color:var(--primary); cursor:pointer; font-size:0.85rem; font-weight:600; padding:0; }
+
+/* ── Modal ── */
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px; animation:fadeIn 0.2s ease; }
+.modal-box { width:100%; max-width:580px; padding:0; overflow:hidden; max-height:90vh; overflow-y:auto; }
+.modal-header { display:flex; justify-content:space-between; align-items:center; padding:20px 24px; border-bottom:1px solid var(--border); h3{font-size:1rem;font-weight:800;} }
+.modal-close { background:none; border:none; cursor:pointer; font-size:1.1rem; color:var(--text-muted); padding:4px 8px; border-radius:var(--radius-sm); &:hover{background:var(--bg-muted);} }
+.modal-body  { padding:20px 24px; }
+.modal-footer{ display:flex; justify-content:flex-end; gap:12px; padding:16px 24px; border-top:1px solid var(--border); background:var(--bg-soft); }
+
+.form-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:0 20px; .full{grid-column:1/-1;} }
+
+.veg-check { display:flex; flex-direction:column; gap:8px; }
+.radio-label { display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.87rem; input{cursor:pointer;} }
+
+@media (max-width:600px) {
+  .form-grid-2{grid-template-columns:1fr;}
+  .item-row{flex-wrap:wrap;}
+}

@@ -1,0 +1,205 @@
+/* Reuse auth layout — same split design as login */
+.auth-page {
+  min-height: 100vh;
+  margin-top: calc(-1 * var(--nav-height));
+}
+
+.auth-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+}
+
+/* ── Left panel ── */
+.auth-left {
+  background: linear-gradient(145deg, var(--secondary-dark) 0%, var(--secondary) 50%, #1565c0 100%);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 30% 70%, rgba(229, 57, 53, 0.2) 0%, transparent 60%);
+  }
+}
+
+.auth-left-content {
+  padding: 60px 56px;
+  position: relative;
+  z-index: 1;
+  color: white;
+}
+
+.auth-logo {
+  display: inline-block;
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  color: white;
+  margin-bottom: 40px;
+  text-decoration: none;
+  strong { color: var(--primary-light); font-weight: 800; }
+}
+
+.auth-left h1 {
+  font-size: 2.4rem;
+  line-height: 1.15;
+  color: white;
+  margin-bottom: 16px;
+  font-weight: 800;
+}
+
+.auth-left p {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.72);
+  line-height: 1.7;
+  margin-bottom: 36px;
+}
+
+.auth-features {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.auth-feature {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.85);
+  span:first-child { font-size: 1.1rem; }
+}
+
+/* ── Right panel ── */
+.auth-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background: var(--bg);
+  overflow-y: auto;
+}
+
+.auth-form-box {
+  width: 100%;
+  max-width: 420px;
+  padding: 8px 0;
+}
+
+.auth-form-header {
+  margin-bottom: 28px;
+  h2 { font-size: 1.9rem; font-weight: 800; margin-bottom: 6px; }
+  p  { color: var(--text-soft); }
+}
+
+/* ── Inputs ── */
+.w-full { width: 100%; justify-content: center; padding: 14px 24px; font-size: 0.95rem; }
+
+.optional-tag {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  text-transform: none;
+  letter-spacing: 0;
+  font-style: italic;
+}
+
+.password-wrapper {
+  position: relative;
+  .form-control { padding-right: 48px; }
+}
+
+.toggle-pass {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0;
+  line-height: 1;
+}
+
+/* ── Password strength ── */
+.strength-bar {
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+.strength-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s ease, background 0.3s ease;
+
+  &.weak   { background: var(--error); }
+  &.medium { background: var(--warning); }
+  &.strong { background: var(--success); }
+}
+
+.strength-label {
+  font-size: 0.75rem;
+  margin-top: 4px;
+  display: block;
+  color: var(--text-muted);
+}
+
+/* ── Button spinner ── */
+.btn-spinner {
+  width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+
+/* ── Role note ── */
+.role-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 12px 14px;
+  background: var(--info-light);
+  border-radius: var(--radius-md);
+  font-size: 0.82rem;
+  color: var(--info);
+  line-height: 1.5;
+  strong { color: var(--secondary); }
+}
+
+/* ── Switch link ── */
+.auth-switch {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 0.9rem;
+  color: var(--text-soft);
+  a {
+    color: var(--primary);
+    font-weight: 600;
+    text-decoration: none;
+    &:hover { text-decoration: underline; }
+  }
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .auth-split { grid-template-columns: 1fr; }
+  .auth-left  { display: none; }
+  .auth-right {
+    padding: 24px 20px;
+    align-items: flex-start;
+    padding-top: calc(var(--nav-height) + 24px);
+  }
+  .auth-page { margin-top: 0; }
+}

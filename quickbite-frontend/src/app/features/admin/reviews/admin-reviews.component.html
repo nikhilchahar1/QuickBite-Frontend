@@ -1,0 +1,38 @@
+<div class="page-header">
+  <div class="container">
+    <a routerLink="/admin" class="back-link">← Dashboard</a>
+    <h1>⭐ Review Moderation</h1>
+    <p>{{ reviews.length }} total reviews</p>
+  </div>
+</div>
+<div class="container admin-body">
+  <app-spinner *ngIf="loading" message="Loading reviews..."></app-spinner>
+  <div *ngIf="!loading">
+    <div class="empty-state" *ngIf="reviews.length === 0">
+      <div class="empty-icon">⭐</div>
+      <h3>No reviews yet</h3>
+    </div>
+    <div class="reviews-grid" *ngIf="reviews.length > 0">
+      <div *ngFor="let r of reviews" class="review-card card">
+        <div class="rv-header">
+          <div>
+            <span class="rv-stars">{{ stars(r.foodRating) }}</span>
+            <span class="rv-sub">Food · Order #{{ r.orderId }}</span>
+          </div>
+          <div class="rv-badges">
+            <span class="badge badge-success" *ngIf="r.verified">✓ Verified</span>
+            <span class="rv-date">{{ formatDate(r.createdAt) }}</span>
+          </div>
+        </div>
+        <p *ngIf="r.comment" class="rv-comment">"{{ r.comment }}"</p>
+        <div class="rv-delivery" *ngIf="r.deliveryRating">
+          🛵 Delivery: {{ stars(r.deliveryRating) }}
+        </div>
+        <div class="rv-actions">
+          <button *ngIf="!r.verified" class="btn btn-success btn-sm" (click)="verify(r.reviewId)">✓ Verify</button>
+          <button class="btn btn-danger btn-sm" (click)="delete(r.reviewId)">🗑 Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

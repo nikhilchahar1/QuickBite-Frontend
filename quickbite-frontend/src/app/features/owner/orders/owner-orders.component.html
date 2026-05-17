@@ -1,0 +1,65 @@
+<div class="page-header">
+  <div class="container">
+    <a routerLink="/owner" class="back-link">← Dashboard</a>
+    <h1>📋 Restaurant Orders</h1>
+  </div>
+</div>
+
+<div class="container orders-body">
+
+  <!-- Restaurant selector -->
+  <div class="rs-selector" *ngIf="restaurants.length > 1">
+    <label class="form-label">Select Restaurant</label>
+    <select class="form-control" style="max-width:300px"
+            [(ngModel)]="selectedRestaurantId" (change)="loadOrders()">
+      <option *ngFor="let r of restaurants" [value]="r.restaurantId">{{ r.name }}</option>
+    </select>
+  </div>
+
+  <app-spinner *ngIf="loading" message="Loading orders..."></app-spinner>
+
+  <div class="empty-state" *ngIf="!loading && orders.length === 0">
+    <div class="empty-icon">📋</div>
+    <h3>No orders yet</h3>
+    <p>Orders will appear here when customers place them</p>
+  </div>
+
+  <div class="orders-grid" *ngIf="!loading && orders.length > 0">
+    <div *ngFor="let order of orders" class="order-card card"
+         [class.new-order]="order.orderStatus === 'PLACED'">
+
+      <div class="oc-top">
+        <div>
+          <strong>#{{ order.orderId }}</strong>
+          <span class="badge ml-8" [class]="'status-' + order.orderStatus">{{ order.orderStatus }}</span>
+        </div>
+        <span class="oc-time">{{ formatDate(order.orderDate) }}</span>
+      </div>
+
+      <div class="oc-items-list">
+        <div *ngFor="let item of order.orderItems" class="oci">
+          <span>{{ item.quantity }}× {{ item.itemName }}</span>
+          <span>₹{{ item.subtotal }}</span>
+        </div>
+      </div>
+
+      <div class="oc-bottom">
+        <div>
+          <span class="oc-addr">📍 {{ order.deliveryAddress }}</span>
+          <strong class="oc-total">Total: ₹{{ order.finalAmount }}</strong>
+          <span class="oc-pay">{{ order.paymentMode }}</span>
+        </div>
+
+        <div class="oc-btns">
+          <button
+            *ngIf="getNextStatus(order.orderStatus) as next"
+            class="btn btn-primary btn-sm"
+            (click)="updateStatus(order.orderId, next)"
+            [disabled]="updatingId === order.orderId">
+            {{ updatingId === order.orderId ? '...' : '→ Mark ' + next }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

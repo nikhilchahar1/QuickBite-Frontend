@@ -1,0 +1,166 @@
+<nav class="navbar">
+  <div class="nav-inner container">
+
+    <!-- Logo -->
+    <a routerLink="/" class="logo" (click)="closeAll()">
+      <span class="logo-icon">🍕</span>
+      <span class="logo-text">Quick<strong>Bite</strong></span>
+    </a>
+
+    <!-- Desktop Links -->
+    <div class="nav-links">
+      <a routerLink="/restaurants" routerLinkActive="active" class="nav-link"
+         (click)="closeAll()">Restaurants</a>
+
+      <!-- Customer -->
+      <ng-container *ngIf="auth.isCustomer()">
+        <a routerLink="/orders"  routerLinkActive="active" class="nav-link" (click)="closeAll()">Orders</a>
+        <a routerLink="/wallet"  routerLinkActive="active" class="nav-link" (click)="closeAll()">Wallet</a>
+      </ng-container>
+
+      <!-- Owner -->
+      <ng-container *ngIf="auth.isOwner()">
+        <a routerLink="/owner" routerLinkActive="active" class="nav-link" (click)="closeAll()">Dashboard</a>
+        <a routerLink="/owner/orders" routerLinkActive="active" class="nav-link" (click)="closeAll()">Orders</a>
+      </ng-container>
+
+      <!-- Admin -->
+      <ng-container *ngIf="auth.isAdmin()">
+        <a routerLink="/admin" routerLinkActive="active" class="nav-link" (click)="closeAll()">Dashboard</a>
+        <a routerLink="/admin/restaurants"  routerLinkActive="active" class="nav-link" (click)="closeAll()">Restaurants</a>
+        <a routerLink="/admin/users" routerLinkActive="active" class="nav-link" (click)="closeAll()">Users</a>
+      </ng-container>
+    </div>
+
+    <!-- Right Actions -->
+    <div class="nav-actions">
+
+      <!-- Cart Icon (Customer only) -->
+      <a *ngIf="auth.isCustomer()" routerLink="/cart" class="icon-btn" aria-label="Cart" (click)="closeAll()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+        </svg>
+        <span *ngIf="cartCount() > 0" class="badge-dot">{{ cartCount() }}</span>
+      </a>
+
+      <!-- Notification Bell (logged in) -->
+      <a *ngIf="currentUser" routerLink="/notifications" class="icon-btn" aria-label="Notifications" (click)="closeAll()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+        <span *ngIf="unreadCount() > 0" class="badge-dot">{{ unreadCount() }}</span>
+      </a>
+
+      <!-- User Dropdown (logged in) -->
+      <div class="user-menu" *ngIf="currentUser">
+        <button class="user-btn" (click)="toggleDropdown()">
+          <span class="user-avatar">{{ currentUser.fullName.charAt(0).toUpperCase() }}</span>
+          <span class="user-name">{{ currentUser.fullName.split(' ')[0] }}</span>
+          <svg class="chevron" [class.rotated]="dropdownOpen()"
+               width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </button>
+
+        <!-- Dropdown -->
+        <div class="dropdown" *ngIf="dropdownOpen()" (click)="closeAll()">
+          <div class="dropdown-header">
+            <div class="dh-avatar">{{ currentUser.fullName.charAt(0).toUpperCase() }}</div>
+            <div>
+              <div class="dh-name">{{ currentUser.fullName }}</div>
+              <div class="dh-email">{{ currentUser.email }}</div>
+            </div>
+          </div>
+          <div class="dropdown-role">
+            <span class="role-pill">{{ currentUser.role }}</span>
+          </div>
+          <hr class="dropdown-divider">
+
+          <ng-container *ngIf="auth.isCustomer()">
+            <a routerLink="/orders" class="dd-item">📦 My Orders</a>
+            <a routerLink="/wallet" class="dd-item">💰 Wallet</a>
+            <a routerLink="/notifications" class="dd-item">
+              🔔 Notifications
+              <span *ngIf="unreadCount() > 0" class="dd-badge">{{ unreadCount() }}</span>
+            </a>
+          </ng-container>
+
+          <ng-container *ngIf="auth.isOwner()">
+            <a routerLink="/owner" class="dd-item">🏪 My Restaurants</a>
+            <a routerLink="/owner/orders" class="dd-item">📋 Incoming Orders</a>
+          </ng-container>
+
+          <ng-container *ngIf="auth.isAdmin()">
+            <a routerLink="/admin" class="dd-item">📊 Dashboard</a>
+            <a routerLink="/admin/users" class="dd-item">👥 Users</a>
+            <a routerLink="/admin/restaurants" class="dd-item">🏪 Restaurants</a>
+            <a routerLink="/admin/notifications" class="dd-item">📢 Send Notifications</a>
+          </ng-container>
+
+          <hr class="dropdown-divider">
+          <button class="dd-item danger" (click)="logout()">🚪 Sign Out</button>
+        </div>
+      </div>
+
+      <!-- Guest buttons -->
+      <ng-container *ngIf="!currentUser">
+        <a routerLink="/login" class="btn btn-ghost btn-sm hide-mobile" (click)="closeAll()">Sign In</a>
+        <a routerLink="/register" class="btn btn-primary btn-sm"           (click)="closeAll()">Join Free</a>
+      </ng-container>
+
+      <!-- Hamburger -->
+      <button class="hamburger" (click)="toggleMenu()" aria-label="Menu">
+        <span [class.open]="menuOpen()"></span>
+        <span [class.open]="menuOpen()"></span>
+        <span [class.open]="menuOpen()"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-overlay" *ngIf="menuOpen()" (click)="closeAll()">
+    <div class="mobile-menu" (click)="$event.stopPropagation()">
+
+      <div class="mobile-user" *ngIf="currentUser">
+        <div class="mu-avatar">{{ currentUser.fullName.charAt(0).toUpperCase() }}</div>
+        <div>
+          <div class="mu-name">{{ currentUser.fullName }}</div>
+          <span class="role-pill sm">{{ currentUser.role }}</span>
+        </div>
+      </div>
+
+      <a routerLink="/restaurants" class="mobile-link" (click)="closeAll()">🍽️ Restaurants</a>
+
+      <ng-container *ngIf="auth.isCustomer()">
+        <a routerLink="/cart" class="mobile-link" (click)="closeAll()">
+          🛒 Cart <span *ngIf="cartCount() > 0" class="ml-badge">{{ cartCount() }}</span>
+        </a>
+        <a routerLink="/orders" class="mobile-link" (click)="closeAll()">📦 My Orders</a>
+        <a routerLink="/wallet" class="mobile-link" (click)="closeAll()">💰 Wallet</a>
+        <a routerLink="/notifications" class="mobile-link" (click)="closeAll()">
+          🔔 Notifications <span *ngIf="unreadCount() > 0" class="ml-badge">{{ unreadCount() }}</span>
+        </a>
+      </ng-container>
+
+      <ng-container *ngIf="auth.isOwner()">
+        <a routerLink="/owner" class="mobile-link" (click)="closeAll()">🏪 Dashboard</a>
+        <a routerLink="/owner/orders" class="mobile-link" (click)="closeAll()">📋 Orders</a>
+      </ng-container>
+
+      <ng-container *ngIf="auth.isAdmin()">
+        <a routerLink="/admin" class="mobile-link" (click)="closeAll()">📊 Admin</a>
+        <a routerLink="/admin/users" class="mobile-link" (click)="closeAll()">👥 Users</a>
+        <a routerLink="/admin/restaurants"  class="mobile-link" (click)="closeAll()">🏪 Restaurants</a>
+      </ng-container>
+
+      <ng-container *ngIf="!currentUser">
+        <a routerLink="/login"    class="mobile-link" (click)="closeAll()">Sign In</a>
+        <a routerLink="/register" class="mobile-link highlight" (click)="closeAll()">Join Free 🚀</a>
+      </ng-container>
+
+      <button *ngIf="currentUser" class="mobile-link danger" (click)="logout()">🚪 Sign Out</button>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,75 @@
+<div class="page-header">
+  <div class="container">
+    <a routerLink="/admin" class="back-link">← Dashboard</a>
+    <h1>🏪 Restaurant Management</h1>
+  </div>
+</div>
+
+<div class="container admin-body">
+  <app-spinner *ngIf="loading" message="Loading..."></app-spinner>
+
+  <div *ngIf="!loading">
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab" [class.active]="activeTab==='pending'" (click)="activeTab='pending'">
+        Pending Approval <span class="tab-badge" *ngIf="pending.length">{{ pending.length }}</span>
+      </button>
+      <button class="tab" [class.active]="activeTab==='all'" (click)="activeTab='all'">
+        All Restaurants ({{ all.length }})
+      </button>
+    </div>
+
+    <!-- Pending -->
+    <div *ngIf="activeTab==='pending'">
+      <div class="empty-state" *ngIf="pending.length === 0">
+        <div class="empty-icon">✅</div>
+        <h3>No pending approvals</h3>
+        <p>All restaurants are reviewed</p>
+      </div>
+      <div class="r-grid" *ngIf="pending.length > 0">
+        <div *ngFor="let r of pending" class="r-card card pending-card">
+          <div class="rc-info">
+            <h3>{{ r.name }}</h3>
+            <p>{{ r.cuisine }} · {{ r.city }}</p>
+            <p class="rc-addr">{{ r.address }}</p>
+          </div>
+          <div class="rc-actions">
+            <button class="btn btn-success btn-sm"
+                    (click)="approve(r.restaurantId)"
+                    [disabled]="approvingId === r.restaurantId">
+              {{ approvingId === r.restaurantId ? '...' : '✓ Approve' }}
+            </button>
+            <button class="btn btn-danger btn-sm" (click)="delete(r.restaurantId, r.name)">🗑 Reject</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- All -->
+    <div *ngIf="activeTab==='all'">
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Name</th><th>Cuisine</th><th>City</th><th>Rating</th><th>Status</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let r of all">
+              <td><strong>{{ r.name }}</strong></td>
+              <td>{{ r.cuisine }}</td>
+              <td>{{ r.city }}</td>
+              <td>★ {{ r.avgRating?.toFixed(1) || '0.0' }}</td>
+              <td>
+                <span class="badge" [class]="r.approved ? 'badge-success' : 'badge-warning'">
+                  {{ r.approved ? 'Approved' : 'Pending' }}
+                </span>
+              </td>
+              <td>
+                <button class="btn btn-danger btn-sm" (click)="delete(r.restaurantId, r.name)">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

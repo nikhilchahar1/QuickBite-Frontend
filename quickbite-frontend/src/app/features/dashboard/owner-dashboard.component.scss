@@ -1,0 +1,84 @@
+.dashboard-body { padding: 32px 0 64px; }
+
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 36px;
+}
+
+.qa-card {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  padding: 24px 16px;
+  background: white; border: 2px solid var(--border);
+  border-radius: var(--radius-lg); text-decoration: none;
+  color: var(--text-soft); font-weight: 600; font-size: 0.9rem;
+  transition: all var(--transition);
+  &:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-3px); box-shadow: var(--shadow-md); }
+}
+.qa-icon { font-size: 1.8rem; }
+
+.r-cards { display: flex; flex-direction: column; gap: 20px; }
+
+.r-owner-card { padding: 0; overflow: hidden; }
+
+.roc-header {
+  display: flex; align-items: center; gap: 16px;
+  padding: 20px 24px; border-bottom: 1px solid var(--border);
+}
+
+.roc-img {
+  width: 60px; height: 60px;
+  border-radius: var(--radius-md); overflow: hidden;
+  background: var(--bg-muted); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem;
+  img { width: 100%; height: 100%; object-fit: cover; }
+}
+
+.roc-info {
+  flex: 1;
+  h3 { font-size: 1.05rem; font-weight: 800; margin-bottom: 4px; }
+  p  { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 8px; }
+}
+.roc-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* Open Toggle */
+.open-toggle {
+  cursor: pointer; flex-shrink: 0;
+  input[type="checkbox"] { display: none; }
+  &:has(input:checked) .ot-track { background: var(--success); }
+  &:has(input:checked) .ot-thumb { transform: translateX(22px); }
+  &:has(input:disabled) { opacity: 0.5; }
+}
+.ot-track {
+  display: block; width: 48px; height: 26px;
+  background: var(--border-dark); border-radius: 13px;
+  position: relative; transition: background var(--transition);
+}
+.ot-thumb {
+  position: absolute; top: 3px; left: 3px;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: white; box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  transition: transform var(--transition);
+}
+
+.roc-stats {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  padding: 16px 24px; border-bottom: 1px solid var(--border);
+  background: var(--bg-soft);
+}
+.roc-stat {
+  text-align: center;
+  strong { display: block; font-size: 1.1rem; font-weight: 800; }
+  span   { font-size: 0.75rem; color: var(--text-muted); }
+}
+
+.roc-actions {
+  display: flex; gap: 10px; padding: 16px 24px;
+}
+
+@media (max-width: 600px) {
+  .quick-actions { grid-template-columns: 1fr 1fr; }
+  .roc-header { flex-wrap: wrap; }
+}
