@@ -37,6 +37,7 @@
           <input
             type="text"
             class="form-control"
+            id="fullName" name="fullName"
             [(ngModel)]="fullName"
             placeholder="Rahul Sharma"
             [class.error]="error && !fullName"
@@ -50,6 +51,7 @@
           <input
             type="email"
             class="form-control"
+            id="email"    name="email"
             [(ngModel)]="email"
             placeholder="rahul@example.com"
             [class.error]="error && !email"
@@ -66,6 +68,7 @@
           <input
             type="tel"
             class="form-control"
+            id="phone"    name="phone" 
             [(ngModel)]="phone"
             placeholder="+91 98765 43210"
             autocomplete="tel"
@@ -79,6 +82,7 @@
             <input
               [type]="showPassword ? 'text' : 'password'"
               class="form-control"
+              id="password" name="password"
               [(ngModel)]="password"
               placeholder="Min. 6 characters"
               [class.error]="error && password.length < 6 && password.length > 0"

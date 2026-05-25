@@ -25,7 +25,7 @@
       <div class="oc-header">
         <div class="oc-id">
           <strong>Order #{{ order.orderId }}</strong>
-          <span class="badge" [class]="getStatusClass(order.orderStatus)">
+          <span class="badge" [ngClass]="'status-' + order.orderStatus.toLowerCase()">
             {{ order.orderStatus }}
           </span>
         </div>

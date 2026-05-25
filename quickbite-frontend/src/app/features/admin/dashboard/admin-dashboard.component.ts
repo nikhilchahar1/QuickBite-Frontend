@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { forkJoin, of } from 'rxjs';
+import { catchError, finalize } from 'rxjs/operators';
 import { RestaurantService } from '../../../core/services/restaurant.service';
 import { OrderService } from '../../../core/services/order.service';
 import { SpinnerComponent } from '../../../shared/components/spinner/spinner.component';
@@ -14,15 +16,16 @@ import { SpinnerComponent } from '../../../shared/components/spinner/spinner.com
 })
 export class AdminDashboardComponent implements OnInit {
   loading = true;
-  stats = { orders: 0, restaurants: 0, pending: 0, revenue: 0 };
+  error   = '';
+  stats   = { orders: 0, restaurants: 0, pending: 0, revenue: 0 };
   recentOrders: any[] = [];
 
   adminLinks = [
     { icon: '👥', label: 'Users',         route: '/admin/users',         desc: 'Manage all users' },
-    { icon: '🏪', label: 'Restaurants',   route: '/admin/restaurants',   desc: 'Approve & manage restaurants' },
-    { icon: '📦', label: 'Orders',        route: '/admin/orders',        desc: 'View all platform orders' },
+    { icon: '🏪', label: 'Restaurants',   route: '/admin/restaurants',   desc: 'Approve & manage' },
+    { icon: '📦', label: 'Orders',        route: '/admin/orders',        desc: 'All platform orders' },
     { icon: '⭐', label: 'Reviews',       route: '/admin/reviews',       desc: 'Moderate reviews' },
-    { icon: '📢', label: 'Notifications', route: '/admin/notifications', desc: 'Send bulk notifications' },
+    { icon: '📢', label: 'Notifications', route: '/admin/notifications', desc: 'Send bulk messages' },
   ];
 
   constructor(
@@ -31,19 +34,25 @@ export class AdminDashboardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    Promise.all([
-      this.restaurantService.getAll().toPromise(),
-      this.restaurantService.getPending().toPromise(),
-      this.orderService.getAllOrders().toPromise()
-    ]).then(([restaurants, pending, orders]) => {
-      this.stats.restaurants = restaurants?.length || 0;
-      this.stats.pending     = pending?.length || 0;
-      this.stats.orders      = orders?.length || 0;
-      this.stats.revenue     = orders?.reduce((s, o) => s + (o.finalAmount || 0), 0) || 0;
-      this.recentOrders      = (orders || [])
-        .sort((a: any, b: any) => new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime())
-        .slice(0, 6);
-      this.loading = false;
-    }).catch(() => { this.loading = false; });
+    forkJoin({
+      restaurants: this.restaurantService.getAll().pipe(catchError(() => of([]))),
+      pending:     this.restaurantService.getPending().pipe(catchError(() => of([]))),
+      orders:      this.orderService.getAllOrders().pipe(catchError(() => of([])))
+    }).pipe(
+      finalize(() => { this.loading = false; })
+    ).subscribe({
+      next: ({ restaurants, pending, orders }) => {
+        this.stats.restaurants = restaurants.length;
+        this.stats.pending     = pending.length;
+        this.stats.orders      = orders.length;
+        this.stats.revenue     = orders.reduce((s: number, o: any) => s + (o.finalAmount || 0), 0);
+        this.recentOrders      = [...orders]
+          .sort((a: any, b: any) => new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime())
+          .slice(0, 6);
+      },
+      error: () => {
+        this.error = 'Could not load dashboard data.';
+      }
+    });
   }
 }

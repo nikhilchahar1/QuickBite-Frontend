@@ -36,6 +36,8 @@
           <label class="form-label">Email Address</label>
           <input
             type="email"
+            id="email"    
+            name="email"
             class="form-control"
             [(ngModel)]="email"
             placeholder="you@example.com"
@@ -51,6 +53,8 @@
           <div class="password-wrapper">
             <input
               [type]="showPassword ? 'text' : 'password'"
+              id="password" 
+              name="password"
               class="form-control"
               [(ngModel)]="password"
               placeholder="Your password"
@@ -85,16 +89,6 @@
           </svg>
           <span>Continue with Google</span>
         </button>
-
-        <!-- Demo credentials hint -->
-        <!-- <div class="demo-box">
-          <p class="demo-title">🧪 Demo Credentials</p>
-          <div class="demo-row">
-            <span class="demo-role admin">ADMIN</span>
-            <code>admin&#64;quickbite.com / Admin&#64;123</code>
-          </div>
-          <p class="demo-note">Register normally to get a CUSTOMER account.</p>
-        </div> -->
 
         <!-- Switch to Register -->
         <div class="auth-switch">

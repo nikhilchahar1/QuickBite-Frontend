@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { forkJoin, of } from 'rxjs';
+import { catchError, finalize } from 'rxjs/operators';
 import { RestaurantService } from '../../core/services/restaurant.service';
 import { OrderService } from '../../core/services/order.service';
 import { ToastService } from '../../core/services/toast.service';
@@ -19,6 +21,7 @@ export class OwnerDashboardComponent implements OnInit {
   recentOrders: OrderResponse[] = [];
   loading = true;
   togglingId: number | null = null;
+  error = '';
 
   constructor(
     private restaurantService: RestaurantService,
@@ -27,51 +30,53 @@ export class OwnerDashboardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.restaurantService.getMyRestaurants().subscribe({
-      next: list => {
-        this.restaurants = list;
-        if (list.length > 0) this.loadOrders(list[0].restaurantId);
-        else this.loading = false;
-      },
-      error: () => { this.loading = false; }
-    });
-  }
+    this.restaurantService.getMyRestaurants().pipe(
+      catchError(() => of([])),
+      finalize(() => { })
+    ).subscribe(list => {
+      this.restaurants = list;
 
-  private loadOrders(restaurantId: number): void {
-    this.orderService.getRestaurantOrders(restaurantId).subscribe({
-      next: orders => {
+      if (list.length === 0) {
+        this.loading = false;
+        return;
+      }
+
+      // Load orders for first restaurant in parallel — don't block UI on failure
+      this.orderService.getRestaurantOrders(list[0].restaurantId).pipe(
+        catchError(() => of([])),
+        finalize(() => { this.loading = false; })
+      ).subscribe(orders => {
         this.recentOrders = orders
           .sort((a, b) => new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime())
           .slice(0, 5);
-        this.loading = false;
-      },
-      error: () => { this.loading = false; }
+      });
     });
   }
 
   toggle(restaurant: Restaurant): void {
     this.togglingId = restaurant.restaurantId;
-    this.restaurantService.toggleOpen(restaurant.restaurantId).subscribe({
-      next: updated => {
-        const idx = this.restaurants.findIndex(r => r.restaurantId === updated.restaurantId);
-        if (idx !== -1) this.restaurants[idx] = updated;
+    this.restaurantService.toggleOpen(restaurant.restaurantId).pipe(
+      catchError(err => {
+        this.toast.error('Could not toggle restaurant status.');
         this.togglingId = null;
-        this.toast.success(`${updated.name} is now ${updated.open ? 'Open' : 'Closed'}`);
-      },
-      error: () => { this.togglingId = null; }
+        return of(restaurant);
+      })
+    ).subscribe(updated => {
+      const idx = this.restaurants.findIndex(r => r.restaurantId === updated.restaurantId);
+      if (idx !== -1) this.restaurants[idx] = { ...updated };
+      this.togglingId = null;
+      this.toast.success(`${updated.name} is now ${updated.open ? 'Open' : 'Closed'}`);
     });
   }
 
-  getTodayRevenue(restaurantId: number): number {
+  getTodayRevenue(): number {
     const today = new Date().toDateString();
     return this.recentOrders
-      .filter(o => new Date(o.orderDate).toDateString() === today && o.restaurantId === restaurantId)
+      .filter(o => new Date(o.orderDate).toDateString() === today)
       .reduce((sum, o) => sum + o.finalAmount, 0);
   }
 
-  getPendingCount(restaurantId: number): number {
-    return this.recentOrders.filter(o =>
-      o.restaurantId === restaurantId && o.orderStatus === 'PLACED'
-    ).length;
+  getPendingCount(): number {
+    return this.recentOrders.filter(o => o.orderStatus === 'PLACED').length;
   }
 }

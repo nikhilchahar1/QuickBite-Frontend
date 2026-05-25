@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { catchError, finalize } from 'rxjs/operators';
+import { of } from 'rxjs';
 import { RestaurantService } from '../../../core/services/restaurant.service';
 import { SpinnerComponent } from '../../../shared/components/spinner/spinner.component';
 import { Restaurant } from '../../../shared/models/models';
@@ -17,16 +19,16 @@ export class RestaurantListComponent implements OnInit {
   allRestaurants: Restaurant[]      = [];
   filteredRestaurants: Restaurant[] = [];
   loading = false;
+  error   = '';
 
-  // Filters
-  searchQuery  = '';
+  searchQuery     = '';
   selectedCity    = '';
   selectedCuisine = '';
   selectedSort    = 'rating';
   showOpenOnly    = false;
 
-  cities   = ['All', 'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Pune', 'Agra'];
-  cuisines = ['All', 'Indian', 'Chinese', 'Italian', 'Mexican', 'Thai', 'Japanese', 'Continental', 'Fast Food'];
+  cities   = ['Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Pune', 'Agra', 'Mathura'];
+  cuisines = ['Indian', 'Chinese', 'Italian', 'Mexican', 'Thai', 'Japanese', 'Continental', 'Fast Food'];
   sortOptions = [
     { value: 'rating',   label: 'Top Rated' },
     { value: 'delivery', label: 'Fastest Delivery' },
@@ -40,49 +42,57 @@ export class RestaurantListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Read query params from URL (set by Home page)
+    // Read query params from URL first
     this.route.queryParams.subscribe(params => {
-      this.searchQuery      = params['search']  || '';
-      this.selectedCuisine  = params['cuisine'] || '';
-      this.selectedCity     = params['city']    || '';
+      this.searchQuery     = params['search']  || '';
+      this.selectedCuisine = params['cuisine'] || '';
+      this.selectedCity    = params['city']    || '';
       this.loadAll();
     });
   }
 
   private loadAll(): void {
     this.loading = true;
-    this.restaurantService.getAll().subscribe({
-      next: list => {
-        this.allRestaurants = list;
-        this.applyFilters();
+    this.error   = '';
+
+    this.restaurantService.getAll().pipe(
+      catchError(err => {
+        this.error = 'Could not load restaurants. Make sure the backend is running.';
+        return of([]);
+      }),
+      finalize(() => {
         this.loading = false;
-      },
-      error: () => { this.loading = false; }
+        // ✅ KEY FIX: Always apply filters after load completes
+        // whether success or error — this populates filteredRestaurants
+        this.applyFilters();
+      })
+    ).subscribe(list => {
+      this.allRestaurants = list;
     });
   }
 
   applyFilters(): void {
     let result = [...this.allRestaurants];
 
-    // Search
+    // Search filter
     if (this.searchQuery.trim()) {
       const q = this.searchQuery.toLowerCase();
       result = result.filter(r =>
-        r.name.toLowerCase().includes(q) ||
-        r.cuisine.toLowerCase().includes(q) ||
+        r.name.toLowerCase().includes(q)     ||
+        r.cuisine.toLowerCase().includes(q)  ||
         r.city.toLowerCase().includes(q)
       );
     }
 
-    // City
-    if (this.selectedCity && this.selectedCity !== 'All') {
+    // City filter
+    if (this.selectedCity) {
       result = result.filter(r =>
         r.city.toLowerCase() === this.selectedCity.toLowerCase()
       );
     }
 
-    // Cuisine
-    if (this.selectedCuisine && this.selectedCuisine !== 'All') {
+    // Cuisine filter
+    if (this.selectedCuisine) {
       result = result.filter(r =>
         r.cuisine.toLowerCase() === this.selectedCuisine.toLowerCase()
       );
@@ -94,12 +104,16 @@ export class RestaurantListComponent implements OnInit {
     }
 
     // Sort
-    if (this.selectedSort === 'rating') {
-      result.sort((a, b) => (b.avgRating || 0) - (a.avgRating || 0));
-    } else if (this.selectedSort === 'delivery') {
-      result.sort((a, b) => (a.estimatedDeliveryMin || 30) - (b.estimatedDeliveryMin || 30));
-    } else if (this.selectedSort === 'name') {
-      result.sort((a, b) => a.name.localeCompare(b.name));
+    switch (this.selectedSort) {
+      case 'rating':
+        result.sort((a, b) => (b.avgRating || 0) - (a.avgRating || 0));
+        break;
+      case 'delivery':
+        result.sort((a, b) => (a.estimatedDeliveryMin || 30) - (b.estimatedDeliveryMin || 30));
+        break;
+      case 'name':
+        result.sort((a, b) => a.name.localeCompare(b.name));
+        break;
     }
 
     this.filteredRestaurants = result;
